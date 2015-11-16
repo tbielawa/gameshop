@@ -50,8 +50,8 @@ class PongBall(object):
         self.angle = angle
         self.color = color
         self.center = self.surface.get_rect().center
-        self.width = 3
-        self.height = 3
+        self.width = 16
+        self.height = 16
         self.rect = pygame.Rect(self.center, (self.width, self.height))
 
     def hit_boundary(self):
@@ -122,12 +122,12 @@ ball = PongBall(screen, wall_list, angle=float(angle))
 
 while 1:
     clock.tick(30)
-    screen.fill(blue)
+    screen.fill(white)
     # This is the court, it's black
     court_area = pygame.draw.rect(screen, black, court_rect)
-    pygame.draw.rect(screen, green, screen_right)
-    pygame.draw.rect(screen, green, screen_left)
-    b = pygame.draw.rect(screen, green, screen_bottom)
-    t = pygame.draw.rect(screen, green, screen_top)
+    pygame.draw.rect(screen, white, screen_right)
+    pygame.draw.rect(screen, white, screen_left)
+    b = pygame.draw.rect(screen, white, screen_bottom)
+    t = pygame.draw.rect(screen, white, screen_top)
     ball.update()
     pygame.display.flip()
