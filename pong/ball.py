@@ -32,8 +32,10 @@ rads = math.radians
 class PongBall(object):
     white = (255, 255, 255)
 
-    def __init__(self, surface, velocity=5, angle=0, color=(255, 255, 255)):
+    def __init__(self, surface, walls, velocity=5, angle=0, color=(255, 255, 255)):
         self.surface = surface
+        # A dict of walls
+        self.walls = walls
         self.velocity = velocity
         self.angle = angle
         self.color = color
@@ -42,12 +44,18 @@ class PongBall(object):
         self.height = 16
         self.rect = pygame.Rect(self.center, (self.width, self.height))
 
+    def hit_wall(self):
+        # Check if the ball has struck a wall
+        for wall in self.walls:
+            if self.rect.colliderect(wall):
+                print "Looks like you killed some poor fellers dog, sarge"
+
     def update(self):
-        cur_x, cur_y = self.center
         next_x = self.velocity * math.cos(rads(self.angle))
         next_y = self.velocity * math.sin(rads(self.angle))
         self.rect.move_ip(next_x, next_y)
         pygame.draw.rect(self.surface, white, self.rect)
+        self.hit_wall()
 
 ######################################################################
 screen_w = court_width + (court_margin * 2)
@@ -70,7 +78,8 @@ screen_top    = pygame.Rect(court_rect.topleft, (court_rect.w, 2))
 screen_right  = pygame.Rect(court_rect.topright, (2, court_rect.h+2))
 screen_bottom = pygame.Rect(court_rect.bottomleft, (court_rect.w, 2))
 screen_left   = pygame.Rect(court_rect.topleft, (2, court_rect.h))
-walls = [screen_top, screen_bottom, screen_right, screen_left]
+# wall_names = ["top", "bottom", "right", "left"]
+wall_list = [screen_top, screen_bottom, screen_right, screen_left]
 
 ######################################################################
 pygame.init()
@@ -80,7 +89,7 @@ clock = pygame.time.Clock()
 
 ######################################################################
 # DRAW THESE
-ball = PongBall(screen, angle=0)
+ball = PongBall(screen, wall_list, angle=0)
 
 
 while 1:
@@ -93,6 +102,8 @@ while 1:
     b = pygame.draw.rect(screen, green, screen_bottom)
     t = pygame.draw.rect(screen, green, screen_top)
     ball.update()
+
+
 
     pygame.display.flip()
 
