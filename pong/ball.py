@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import math
-
+import random
 import sys
 # http://www.pygame.org/docs/ref/pygame.html
 import pygame
@@ -46,9 +46,10 @@ class PongBall(object):
 
     def hit_wall(self):
         # Check if the ball has struck a wall
-        for wall in self.walls:
-            if self.rect.colliderect(wall):
-                print "Looks like you killed some poor fellers dog, sarge"
+        impacts = self.rect.collidelist(self.walls)
+        if impacts != -1:
+            print "Looks like you killed some poor fellers dog, sarge: %s" % self.walls[impacts]
+            sys.exit(0)
 
     def update(self):
         next_x = self.velocity * math.cos(rads(self.angle))
@@ -78,7 +79,7 @@ screen_top    = pygame.Rect(court_rect.topleft, (court_rect.w, 2))
 screen_right  = pygame.Rect(court_rect.topright, (2, court_rect.h+2))
 screen_bottom = pygame.Rect(court_rect.bottomleft, (court_rect.w, 2))
 screen_left   = pygame.Rect(court_rect.topleft, (2, court_rect.h))
-# wall_names = ["top", "bottom", "right", "left"]
+wall_names = ["top", "bottom", "right", "left"]
 wall_list = [screen_top, screen_bottom, screen_right, screen_left]
 
 ######################################################################
@@ -89,7 +90,9 @@ clock = pygame.time.Clock()
 
 ######################################################################
 # DRAW THESE
-ball = PongBall(screen, wall_list, angle=0)
+angle = -random.randrange(0,360)
+print angle
+ball = PongBall(screen, wall_list, angle=angle)
 
 
 while 1:
@@ -102,9 +105,6 @@ while 1:
     b = pygame.draw.rect(screen, green, screen_bottom)
     t = pygame.draw.rect(screen, green, screen_top)
     ball.update()
-
-
-
     pygame.display.flip()
 
 
