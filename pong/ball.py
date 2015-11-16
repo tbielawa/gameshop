@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import math
 import random
-import sys
+# import sys
 # http://www.pygame.org/docs/ref/pygame.html
 import pygame
 # http://www.pygame.org/docs/ref/draw.html
@@ -25,14 +25,24 @@ court_height = 464
 court_rect = pygame.Rect(8, 8, court_width, court_height)
 
 ######################################################################
+# Some funcs
+
 # Alias math.radians() to just 'rads'
 rads = math.radians
+degs = math.degrees
+
+
+# Is this a wall?
+def is_wall(rect):
+    # Is the height greater than the width?
+    return rect.h > rect.w
+
 
 ######################################################################
 class PongBall(object):
     white = (255, 255, 255)
 
-    def __init__(self, surface, walls, velocity=5, angle=0, color=(255, 255, 255)):
+    def __init__(self, surface, walls, velocity=5, angle=0.0, color=(255, 255, 255)):
         self.surface = surface
         # A dict of walls
         self.walls = walls
@@ -40,23 +50,38 @@ class PongBall(object):
         self.angle = angle
         self.color = color
         self.center = self.surface.get_rect().center
-        self.width = 16
-        self.height = 16
+        self.width = 3
+        self.height = 3
         self.rect = pygame.Rect(self.center, (self.width, self.height))
 
-    def hit_wall(self):
-        # Check if the ball has struck a wall
-        impacts = self.rect.collidelist(self.walls)
-        if impacts != -1:
-            print "Looks like you killed some poor fellers dog, sarge: %s" % self.walls[impacts]
-            sys.exit(0)
+    def hit_boundary(self):
+        # Check if the ball has struck a boundary
+        impact = self.rect.collidelist(self.walls)
+        if impact != -1:
+            print "We hit something...: %s" % impact
+            print self.walls[impact]
+            return impact
+        else:
+            return None
 
     def update(self):
         next_x = self.velocity * math.cos(rads(self.angle))
         next_y = self.velocity * math.sin(rads(self.angle))
+        boundary = self.hit_boundary()
+        if boundary is not None:
+            # We hit a boundary, the boundary object is a Rect
+            #
+            # Is it vertical (a wall?), or horizontal (a floor/ceil)?
+            if is_wall(self.walls[boundary]):
+                next_x = -1 * (self.velocity * math.cos(rads(self.angle)))
+            else:
+                next_y = -1 * (self.velocity * math.sin(rads(self.angle)))
+
+        self.angle = math.degrees(math.atan2(next_y, next_x))
+
         self.rect.move_ip(next_x, next_y)
         pygame.draw.rect(self.surface, white, self.rect)
-        self.hit_wall()
+
 
 ######################################################################
 screen_w = court_width + (court_margin * 2)
@@ -75,12 +100,12 @@ blue = (0, 0, 255)
 ######################################################################
 # The screen borders
 #     Rect(left, top, width, height) -> Rect
-screen_top    = pygame.Rect(court_rect.topleft, (court_rect.w, 2))
-screen_right  = pygame.Rect(court_rect.topright, (2, court_rect.h+2))
+screen_top = pygame.Rect(court_rect.topleft, (court_rect.w, 2))
+screen_right = pygame.Rect(court_rect.topright, (2, court_rect.h + 2))
 screen_bottom = pygame.Rect(court_rect.bottomleft, (court_rect.w, 2))
-screen_left   = pygame.Rect(court_rect.topleft, (2, court_rect.h))
-wall_names = ["top", "bottom", "right", "left"]
-wall_list = [screen_top, screen_bottom, screen_right, screen_left]
+screen_left = pygame.Rect(court_rect.topleft, (2, court_rect.h))
+wall_names = ["top", "right", "bottom", "left"]
+wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 
 ######################################################################
 pygame.init()
@@ -90,9 +115,9 @@ clock = pygame.time.Clock()
 
 ######################################################################
 # DRAW THESE
-angle = -random.randrange(0,360)
+angle = random.randrange(0, 360)
 print angle
-ball = PongBall(screen, wall_list, angle=angle)
+ball = PongBall(screen, wall_list, angle=float(angle))
 
 
 while 1:
@@ -106,7 +131,3 @@ while 1:
     t = pygame.draw.rect(screen, green, screen_top)
     ball.update()
     pygame.display.flip()
-
-
-if __name__ == '__main__':
-    update()
