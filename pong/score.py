@@ -155,6 +155,11 @@ Return data:
 
         self.surface.blit(self.image, self.rect)
 
+######################################################################
+class PlayerScore(object):
+    def __init__(self):
+        pass
+
 
 ######################################################################
 class PongBall(object):
@@ -169,8 +174,8 @@ class PongBall(object):
         self.angle = angle
         self.color = color
         self.center = self.surface.get_rect().center
-        self.width = 16
-        self.height = 16
+        self.width = 10
+        self.height = 10
         self.rect = pygame.Rect(self.center, (self.width, self.height))
 
     def hit_paddle(self):
