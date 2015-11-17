@@ -160,10 +160,11 @@ Return data:
 class PongBall(object):
     white = (255, 255, 255)
 
-    def __init__(self, surface, walls, velocity=5, angle=0.0, color=(255, 255, 255)):
+    def __init__(self, surface, walls, paddles, velocity=5, angle=0.0, color=(255, 255, 255)):
         self.surface = surface
         # A dict of walls
         self.walls = walls
+        self.paddles = paddles
         self.velocity = velocity
         self.angle = angle
         self.color = color
@@ -172,12 +173,16 @@ class PongBall(object):
         self.height = 16
         self.rect = pygame.Rect(self.center, (self.width, self.height))
 
+    def hit_paddle(self):
+        for paddle in self.paddles.sprites():
+            if paddle.rect.colliderect(self.rect):
+                return paddle
+        return False
+
     def hit_boundary(self):
         # Check if the ball has struck a boundary
         impact = self.rect.collidelist(self.walls)
         if impact != -1:
-            # print "We hit something...: %s" % impact
-            # print self.walls[impact]
             return impact
         else:
             return None
@@ -185,8 +190,13 @@ class PongBall(object):
     def update(self):
         next_x = self.velocity * math.cos(rads(self.angle))
         next_y = self.velocity * math.sin(rads(self.angle))
+        paddle = self.hit_paddle()
         boundary = self.hit_boundary()
-        if boundary is not None:
+
+        if paddle:
+            # Hit a paddle, it's a wall shape by design
+            next_x = -1 * (self.velocity * math.cos(rads(self.angle)))
+        elif boundary is not None:
             # We hit a boundary, the boundary object is a Rect
             #
             # Is it vertical (a wall?), or horizontal (a floor/ceil)?
@@ -234,14 +244,10 @@ clock = pygame.time.Clock()
 ######################################################################
 # The pong ball
 angle = random.randrange(0, 360)
-ball = PongBall(screen, wall_list, angle=float(angle))
-
-
-
 paddles = pygame.sprite.Group()
 paddles.add(PongPaddle(PADDLE_LEFT, wall_list, screen))
 paddles.add(PongPaddle(PADDLE_RIGHT, wall_list, screen))
-# paddle_left = PongPaddle(PADDLE_LEFT, wall_list)
+ball = PongBall(screen, wall_list, paddles, angle=float(angle))
 
 while 1:
     for event in pygame.event.get():
