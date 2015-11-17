@@ -58,7 +58,7 @@ class PongPaddle(pygame.sprite.Sprite):
     # COLOR = (255, 255, 255)
     # red
     COLOR = (255, 0, 0)
-    VELOCITY = 6
+    VELOCITY = 10
 
     # Constructor. Pass in the color of the block,
     # and its x and y position
@@ -160,7 +160,7 @@ Return data:
 class PongBall(object):
     white = (255, 255, 255)
 
-    def __init__(self, surface, walls, paddles, velocity=5, angle=0.0, color=(255, 255, 255)):
+    def __init__(self, surface, walls, paddles, velocity=8, angle=0.0, color=(255, 255, 255)):
         self.surface = surface
         # A dict of walls
         self.walls = walls
