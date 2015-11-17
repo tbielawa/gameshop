@@ -83,11 +83,11 @@ class PongPaddle(pygame.sprite.Sprite):
         # Paddles are left/right specific. Each paddle responds to a
         # different set of keyboard input codes.
         if self.side == PADDLE_LEFT:
-            self.up = pygae.K_w
+            self.up = pygame.K_w
             self.down = pygame.K_s
         elif self.side == PADDLE_RIGHT:
-            self.up = pygame.K_up
-            self.down = pygame.K_down
+            self.up = pygame.K_UP
+            self.down = pygame.K_DOWN
 
         # Fetch the rectangle object that has the dimensions of the image
         # Update the position of this object by setting the values of rect.x and rect.y
@@ -115,6 +115,20 @@ class PongPaddle(pygame.sprite.Sprite):
         # Just how far up and down we do want to allow the paddle to
         # go? I suppose we'd want to allow up to the bottom edge of
         # the top floor and the top edge of the bottom floor.
+
+        # hitting the top floor. Then our rect.top (coordinate?) will
+        # intersect with self.walls[0]
+        #
+        # hitting the bottom floor. Then out rect.bottom (coordinate?)
+        # will intersect with self.walls[2]
+        hit_point = self.rect.collidelist(self.walls)
+
+        # OK. We know if this was a floor/ceiling:
+        if hit_point:
+            if hit_point == 0:
+                print "SMASH THROUGH THE GLASS CEILING"
+            elif hit_point == 2:
+                print "MOVE YOUR HEEL THROUGH THE BALSA WOOD FLOOR"
 
     def update(self):
         # Valid movement paths for paddles:
@@ -151,8 +165,8 @@ class PongBall(object):
         # Check if the ball has struck a boundary
         impact = self.rect.collidelist(self.walls)
         if impact != -1:
-            print "We hit something...: %s" % impact
-            print self.walls[impact]
+            # print "We hit something...: %s" % impact
+            # print self.walls[impact]
             return impact
         else:
             return None
