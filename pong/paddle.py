@@ -88,19 +88,19 @@ class PongPaddle(pygame.sprite.Sprite):
         # Calculate some positioning information for the initial paddle
         # positions
         # FOO_wall_mid = (x, y)
-        left_wall_mid = wall_list[3].midright
-        right_wall_mid = wall_list[1].midleft
-        # start the left paddle 8px right of the left wall
-        left_wall_dx = left_wall_mid[0] + 8
-        # start the right paddle 8px left of the right wall
-        right_wall_dx = right_wall_mid[0] - 8
-
+        # left_wall_mid = wall_list[3].midright
+        # right_wall_mid = wall_list[1].midleft
+        # # start the left paddle 8px right of the left wall
+        # left_wall_dx = left_wall_mid[0] + 8
+        # # start the right paddle 8px left of the right wall
+        # right_wall_dx = right_wall_mid[0] - 8
         if self.side == PADDLE_LEFT:
-            self.rect.center = left_wall_mid
-            self.rect.move_ip(left_wall_dx, 0)
+            left_middle = self.walls[3].midright
+            self.rect.center = left_middle
+            self.rect.move_ip(8*3, 0)
         elif self.side == PADDLE_RIGHT:
-            self.rect.center = left_wall_mid
-            self.rect.move_ip(court_width - 24, 0)
+            self.rect.center = self.walls[1].midleft
+            self.rect.move_ip(-8*3, 0)
 
     def update(self):
         # Valid movement paths for paddles:
