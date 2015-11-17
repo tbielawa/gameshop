@@ -4,12 +4,17 @@ import random
 # import sys
 # http://www.pygame.org/docs/ref/pygame.html
 import pygame
+#
+import pygame.event
+#
+import pygame.key
 # http://www.pygame.org/docs/ref/draw.html
 import pygame.draw
 # http://www.pygame.org/docs/ref/time.html
 import pygame.time
 
 import os
+import sys
 os.environ["SDL_VIDEO_CENTERED"] = "TRUE"
 
 
@@ -193,6 +198,15 @@ paddles.add(PongPaddle(PADDLE_RIGHT, wall_list, screen))
 # paddle_left = PongPaddle(PADDLE_LEFT, wall_list)
 
 while 1:
+    for event in pygame.event.get():
+        # Enable the 'close window' button
+        if event.type == pygame.QUIT:
+            sys.exit()
+    kb_input = pygame.key.get_pressed()
+
+    if kb_input[pygame.K_ESCAPE] == 1:
+        sys.exit()
+
     clock.tick(30)
     screen.fill(white)
     # This is the court, it's black
