@@ -96,6 +96,16 @@ class PongPaddle(pygame.sprite.Sprite):
             self.rect.center = self.walls[1].midleft
             self.rect.move_ip(-8*3, 0)
 
+    def _limit_updown(self):
+        my_hat = self.rect.top
+        my_shoes = self.rect.bottom
+        # Just snag the x-componen of the position. We can't move
+        # across the x-axis anyway..
+        my_swag = self.rect.center[0]
+
+        print my_hat
+        print my_shoes
+
     def update(self):
         # Valid movement paths for paddles:
         #
@@ -103,6 +113,7 @@ class PongPaddle(pygame.sprite.Sprite):
         # rect.bottomleft going down until hitting a floor (wall[3])
         # No horizontal movement
         self.surface.blit(self.image, self.rect)
+        self._limit_updown()
 
 ######################################################################
 class PongBall(object):
