@@ -55,9 +55,9 @@ class PongPaddle(pygame.sprite.Sprite):
     HEIGHT = 64
     WIDTH = 16
     # White
-    # COLOR = (255, 255, 255)
+    COLOR = (255, 255, 255)
     # red
-    COLOR = (255, 0, 0)
+    # COLOR = (255, 0, 0)
     VELOCITY = 10
 
     # Constructor. Pass in the color of the block,
@@ -243,7 +243,16 @@ clock = pygame.time.Clock()
 
 ######################################################################
 # The pong ball
-angle = random.randrange(0, 360)
+#
+# Unacceptable initial angles
+bad_top_angles = set(xrange(80,101))
+bad_bottom_angles = set(xrange(270, 291))
+all_angles = set(xrange(0,360))
+allowed_angles = set(all_angles) - bad_top_angles.union(bad_bottom_angles)
+angle = random.choice(list(allowed_angles))
+print "selected angle: %s" % angle
+print allowed_angles
+
 paddles = pygame.sprite.Group()
 paddles.add(PongPaddle(PADDLE_LEFT, wall_list, screen))
 paddles.add(PongPaddle(PADDLE_RIGHT, wall_list, screen))
