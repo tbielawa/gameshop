@@ -105,13 +105,18 @@ class PongPaddle(pygame.sprite.Sprite):
             self.rect.center = self.walls[1].midleft
             self.rect.move_ip(-8*3, 0)
 
-    def _limit_updown(self):
-        my_hat = self.rect.top
-        my_shoes = self.rect.bottom
-        # Just snag the x-componen of the position. We can't move
-        # across the x-axis anyway..
-        my_swag = self.rect.center[0]
+    def hit_border(self, dy):
+        """Calculate using our dy (change in up/down) if we hit a
+ceiling/floor.
 
+If we are *already* in collission with something, allow movement away
+from the object. Do not allow movement further into the object.
+
+Return data:
+
+* ``True`` if we need to shut this shit down (we hit something)
+* ``False`` if we may continue moving
+        """
         # Just how far up and down we do want to allow the paddle to
         # go? I suppose we'd want to allow up to the bottom edge of
         # the top floor and the top edge of the bottom floor.
@@ -121,26 +126,32 @@ class PongPaddle(pygame.sprite.Sprite):
         #
         # hitting the bottom floor. Then out rect.bottom (coordinate?)
         # will intersect with self.walls[2]
-        hit_point = self.rect.collidelist(self.walls)
+        next_pos = self.rect.move(0, dy)
+        hit_point = next_pos.collidelist(self.walls)
 
         # OK. We know if this was a floor/ceiling:
-        if hit_point:
-            if hit_point == 0:
-                print "SMASH THROUGH THE GLASS CEILING"
-            elif hit_point == 2:
-                print "MOVE YOUR HEEL THROUGH THE BALSA WOOD FLOOR"
+        # 0 and 2 are the top border and bottom border
+        if hit_point in [0, 2]:
+            return True
+        return False
 
     def update(self):
         # Valid movement paths for paddles:
         #
         # rect.topleft going up until hitting a ceiling (wall[0])
-        # rect.bottomleft going down until hitting a floor (wall[3])
+        # rect.bottomleft going down until hitting a floor (wall[2])
         # No horizontal movement
-        self._limit_updown()
+        kb_input = pygame.key.get_pressed()
+        dy = 0
+        if kb_input[self.up] == 1:
+            dy = -self.VELOCITY
+        elif kb_input[self.down] == 1:
+            dy = self.VELOCITY
 
-        # Have we moved? Left paddle = W/S, right paddle = Up
-        # Arrow/Down Arrow. Char codes defined in __init__ as self.up
-        # and self.down
+        if not self.hit_border(dy):
+            self.rect.move_ip(0, dy)
+        else:
+            pass
 
         self.surface.blit(self.image, self.rect)
 
