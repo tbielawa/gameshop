@@ -80,6 +80,15 @@ class PongPaddle(pygame.sprite.Sprite):
         self.side = side
         self.walls = walls
 
+        # Paddles are left/right specific. Each paddle responds to a
+        # different set of keyboard input codes.
+        if self.side == PADDLE_LEFT:
+            self.up = pygae.K_w
+            self.down = pygame.K_s
+        elif self.side == PADDLE_RIGHT:
+            self.up = pygame.K_up
+            self.down = pygame.K_down
+
         # Fetch the rectangle object that has the dimensions of the image
         # Update the position of this object by setting the values of rect.x and rect.y
         self.rect = self.image.get_rect()
@@ -103,8 +112,9 @@ class PongPaddle(pygame.sprite.Sprite):
         # across the x-axis anyway..
         my_swag = self.rect.center[0]
 
-        print my_hat
-        print my_shoes
+        # Just how far up and down we do want to allow the paddle to
+        # go? I suppose we'd want to allow up to the bottom edge of
+        # the top floor and the top edge of the bottom floor.
 
     def update(self):
         # Valid movement paths for paddles:
@@ -112,8 +122,14 @@ class PongPaddle(pygame.sprite.Sprite):
         # rect.topleft going up until hitting a ceiling (wall[0])
         # rect.bottomleft going down until hitting a floor (wall[3])
         # No horizontal movement
-        self.surface.blit(self.image, self.rect)
         self._limit_updown()
+
+        # Have we moved? Left paddle = W/S, right paddle = Up
+        # Arrow/Down Arrow. Char codes defined in __init__ as self.up
+        # and self.down
+
+        self.surface.blit(self.image, self.rect)
+
 
 ######################################################################
 class PongBall(object):
