@@ -1,0 +1,6 @@
+Thanks for the following:
+
+
+* The window icon:
+
+    https://github.com/bozidarsevo/sprite-kit-pong
