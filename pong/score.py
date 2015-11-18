@@ -7,6 +7,8 @@ import pygame
 #
 import pygame.event
 #
+import pygame.image
+#
 import pygame.key
 # http://www.pygame.org/docs/ref/draw.html
 import pygame.draw
@@ -22,6 +24,8 @@ os.environ["SDL_VIDEO_CENTERED"] = "TRUE"
 # CONSTANTLY CONSTANT STUFF
 PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
+
+DISPLAY_ICON = "assets/icon.png"
 
 
 # Reference stuff
@@ -100,10 +104,10 @@ class PongPaddle(pygame.sprite.Sprite):
         # is based off of the closest wall (vertical boundary rect)
         if self.side == PADDLE_LEFT:
             self.rect.center = self.walls[3].midright
-            self.rect.move_ip(8*3, 0)
+            self.rect.move_ip(8 * 3, 0)
         elif self.side == PADDLE_RIGHT:
             self.rect.center = self.walls[1].midleft
-            self.rect.move_ip(-8*3, 0)
+            self.rect.move_ip(-8 * 3, 0)
 
     def hit_border(self, dy):
         """Calculate using our dy (change in up/down) if we hit a
@@ -154,6 +158,7 @@ Return data:
             pass
 
         self.surface.blit(self.image, self.rect)
+
 
 ######################################################################
 class PlayerScore(object):
@@ -244,15 +249,17 @@ wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 pygame.init()
 screen = pygame.display.set_mode(screen_dim)
 pygame.display.set_caption("Pongu")
+icon = pygame.image.load(DISPLAY_ICON)
+pygame.display.set_icon(icon)
 clock = pygame.time.Clock()
 
 ######################################################################
 # The pong ball
 #
 # Unacceptable initial angles
-bad_top_angles = set(xrange(80,101))
+bad_top_angles = set(xrange(80, 101))
 bad_bottom_angles = set(xrange(270, 291))
-all_angles = set(xrange(0,360))
+all_angles = set(xrange(0, 360))
 allowed_angles = set(all_angles) - bad_top_angles.union(bad_bottom_angles)
 angle = random.choice(list(allowed_angles))
 print "selected angle: %s" % angle
@@ -270,8 +277,11 @@ while 1:
             sys.exit()
     kb_input = pygame.key.get_pressed()
 
-    if kb_input[pygame.K_ESCAPE] == 1:
+    if kb_input[pygame.K_ESCAPE] == 1 or kb_input[pygame.K_q] == 1:
         sys.exit()
+
+    if kb_input[pygame.K_f] == 1:
+        pygame.display.toggle_fullscreen()
 
     clock.tick(30)
     screen.fill(white)
