@@ -25,7 +25,7 @@ os.environ["SDL_VIDEO_CENTERED"] = "TRUE"
 PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
 
-DISPLAY_ICON = "assets/icon.png"
+DISPLAY_ICON = "assets/sprite-kit-pong.png"
 
 
 # Reference stuff
@@ -248,9 +248,9 @@ wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 ######################################################################
 pygame.init()
 screen = pygame.display.set_mode(screen_dim)
-pygame.display.set_caption("Pongu")
 icon = pygame.image.load(DISPLAY_ICON)
 pygame.display.set_icon(icon)
+pygame.display.set_caption("Pongu")
 clock = pygame.time.Clock()
 
 ######################################################################
@@ -262,8 +262,6 @@ bad_bottom_angles = set(xrange(270, 291))
 all_angles = set(xrange(0, 360))
 allowed_angles = set(all_angles) - bad_top_angles.union(bad_bottom_angles)
 angle = random.choice(list(allowed_angles))
-print "selected angle: %s" % angle
-print allowed_angles
 
 paddles = pygame.sprite.Group()
 paddles.add(PongPaddle(PADDLE_LEFT, wall_list, screen))
