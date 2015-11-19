@@ -65,23 +65,25 @@ if not DEFAULT_FONT in fonts:
     DEFAULT_FONT = pygame.font.get_default_font()
 
 score_font = pygame.font.SysFont(SCORE_FONT, 64)
-
+# A test string so we can get some data positioning for later
+score_size = score_font.render("10", True, white).get_size()
+print score_size
+score_width = score_size[0]
+score_height = score_size[1]
 ######################################################################
 screen_rect = screen.get_rect()
 s_rect_w = screen_rect.width
 s_rect_h = screen_rect.height
 
-score_width = 76 * 2
-score_height = 81
+score_width = 76
 
 
 # centerx is the horizontal mid-point of the rectangle
 # centery is the vertical mid-point of the rectangle
 dividing_line = pygame.Rect(court_rect.centerx, court_rect.top + 2, 8, court_rect.height - 2)
 
-
-score_region_l = pygame.Rect(dividing_line.left - 90, dividing_line.top, 76*2, 81)
-score_region_r = pygame.Rect(dividing_line.right + 10, dividing_line.top, 76*2, 81)
+score_region_l = pygame.Rect(dividing_line.left - score_width - 16, dividing_line.top, score_width, score_height)
+score_region_r = pygame.Rect(dividing_line.right + 16, dividing_line.top, score_width, score_height)
 
 
 while 1:
@@ -109,7 +111,7 @@ while 1:
     # Font stuff, first, the white background
     pygame.draw.rect(screen, white, dividing_line)
 
-    left_score = pong.score_digitize(0)
+    left_score = pong.score_digitize(10)
     right_score = pong.score_digitize(10)
 
     # # Create a surface (score) to blit onto the screen
