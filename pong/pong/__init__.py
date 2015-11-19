@@ -8,6 +8,13 @@ def is_wall(rect):
     return rect.h > rect.w
 
 
+def score_digitize(score):
+    # Returns a left-padded string if the score is only a single digit
+    if len(str(score)) == 1:
+        return " {}".format(str(score))
+    else:
+        return str(score)
+
 class Player(object):
     pass
 

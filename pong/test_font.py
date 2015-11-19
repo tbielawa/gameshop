@@ -17,6 +17,8 @@ import pygame.draw
 # http://www.pygame.org/docs/ref/time.html
 import pygame.time
 
+import pong
+
 import os
 import sys
 ######################################################################
@@ -105,13 +107,15 @@ while 1:
     pygame.draw.rect(screen, white, screen_top)
     ##################################################################
     # Font stuff, first, the white background
-    # pygame.draw.rect(screen, white, text_region_whole)
     pygame.draw.rect(screen, white, dividing_line)
 
+    left_score = pong.score_digitize(0)
+    right_score = pong.score_digitize(10)
+
     # # Create a surface (score) to blit onto the screen
-    score_surface_l = score_font.render("18", True, white)
+    score_surface_l = score_font.render(left_score, True, white)
     screen.blit(score_surface_l, score_region_l)
-    score_surface_r = score_font.render("1", True, white)
+    score_surface_r = score_font.render(right_score, True, white)
     screen.blit(score_surface_r, score_region_r)
 
 
