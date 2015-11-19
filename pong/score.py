@@ -25,7 +25,7 @@ os.environ["SDL_VIDEO_CENTERED"] = "TRUE"
 PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
 
-DISPLAY_ICON = "assets/sprite-kit-pong.png"
+DISPLAY_ICON = "assets/icon.png"
 
 
 # Reference stuff
