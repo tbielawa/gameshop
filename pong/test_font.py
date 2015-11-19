@@ -115,7 +115,7 @@ while 1:
     right_score = pong.score_digitize(10)
 
     # # Create a surface (score) to blit onto the screen
-    score_surface_l = score_font.render(left_score, False, white)
+    score_surface_l = score_font.render(left_score, True, white)
     screen.blit(score_surface_l, score_region_l)
     score_surface_r = score_font.render(right_score, True, white)
     screen.blit(score_surface_r, score_region_r)
