@@ -62,13 +62,25 @@ fonts = pygame.font.get_fonts()
 if not DEFAULT_FONT in fonts:
     DEFAULT_FONT = pygame.font.get_default_font()
 
-score_font = pygame.font.SysFont(SCORE_FONT, 74)
+score_font = pygame.font.SysFont(SCORE_FONT, 64)
 
 ######################################################################
 screen_rect = screen.get_rect()
 s_rect_w = screen_rect.width
 s_rect_h = screen_rect.height
-text_region = screen_rect.inflate(-s_rect_w * .25, -s_rect_h * .25)
+
+score_width = 76 * 2
+score_height = 81
+
+
+# centerx is the horizontal mid-point of the rectangle
+# centery is the vertical mid-point of the rectangle
+dividing_line = pygame.Rect(court_rect.centerx, court_rect.top + 2, 8, court_rect.height - 2)
+
+
+score_region_l = pygame.Rect(dividing_line.left - 90, dividing_line.top, 76*2, 81)
+score_region_r = pygame.Rect(dividing_line.right + 10, dividing_line.top, 76*2, 81)
+
 
 while 1:
     for event in pygame.event.get():
@@ -93,11 +105,15 @@ while 1:
     pygame.draw.rect(screen, white, screen_top)
     ##################################################################
     # Font stuff, first, the white background
-    pygame.draw.rect(screen, white, text_region)
+    # pygame.draw.rect(screen, white, text_region_whole)
+    pygame.draw.rect(screen, white, dividing_line)
 
-    # Create a surface (score) to blit onto the screen
-    score_surface = score_font.render("hello world", True, black)
-    screen.blit(score_surface, text_region)
+    # # Create a surface (score) to blit onto the screen
+    score_surface_l = score_font.render("18", True, white)
+    screen.blit(score_surface_l, score_region_l)
+    score_surface_r = score_font.render("1", True, white)
+    screen.blit(score_surface_r, score_region_r)
+
 
     ##################################################################
     pygame.display.flip()
