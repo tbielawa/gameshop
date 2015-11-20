@@ -4,6 +4,8 @@ import math
 
 PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
+DEFAULT_FONT = "sourcecodepro"
+SCORE_FONT = DEFAULT_FONT
 
 ######################################################################
 black = (000, 000, 000)

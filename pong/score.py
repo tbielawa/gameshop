@@ -79,6 +79,44 @@ paddles.add(pong.PongPaddle(pong.PADDLE_LEFT, wall_list, screen))
 paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list, screen))
 ball = pong.PongBall(screen, wall_list, paddles, angle=float(angle))
 
+######################################################################
+# Fonts
+pygame.font.init()
+fonts = pygame.font.get_fonts()
+if pong.DEFAULT_FONT not in fonts:
+    pong.DEFAULT_FONT = pygame.font.get_default_font()
+
+score_font = pygame.font.SysFont(pong.SCORE_FONT, 64)
+# A test string so we can get some data positioning for later
+score_size = score_font.render("10", True, pong.white).get_size()
+score_width = score_size[0]
+score_height = score_size[1]
+######################################################################
+screen_rect = screen.get_rect()
+s_rect_w = screen_rect.width
+s_rect_h = screen_rect.height
+
+score_width = 76
+
+
+# centerx is the horizontal mid-point of the rectangle
+# centery is the vertical mid-point of the rectangle
+dividing_line = pygame.Rect(court_rect.centerx,
+                            court_rect.top + 2,
+                            8,
+                            court_rect.height - 2)
+
+score_region_l = pygame.Rect(dividing_line.left - score_width - 16,
+                             dividing_line.top,
+                             score_width,
+                             score_height)
+score_region_r = pygame.Rect(dividing_line.right + 16,
+                             dividing_line.top,
+                             score_width,
+                             score_height)
+
+
+
 while 1:
     for event in pygame.event.get():
         # Enable the 'close window' button
@@ -92,6 +130,7 @@ while 1:
     if kb_input[pygame.K_f] == 1:
         pygame.display.toggle_fullscreen()
 
+    ######################################################################
     clock.tick(30)
     screen.fill(pong.white)
     # This is the court, it's black
@@ -100,6 +139,19 @@ while 1:
     pygame.draw.rect(screen, pong.white, screen_left)
     pygame.draw.rect(screen, pong.white, screen_bottom)
     pygame.draw.rect(screen, pong.white, screen_top)
+    ######################################################################
+    pygame.draw.rect(screen, pong.white, dividing_line)
+
+    left_score = pong.score_digitize(10)
+    right_score = pong.score_digitize(10)
+
+    # # Create a surface (score) to blit onto the screen
+    score_surface_l = score_font.render(left_score, True, pong.white)
+    screen.blit(score_surface_l, score_region_l)
+    score_surface_r = score_font.render(right_score, True, pong.white)
+    screen.blit(score_surface_r, score_region_r)
+
+    ######################################################################
     ball.update()
     paddles.update()
     pygame.display.flip()
