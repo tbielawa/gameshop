@@ -61,13 +61,12 @@ clock = pygame.time.Clock()
 # Fonts
 pygame.font.init()
 fonts = pygame.font.get_fonts()
-if not DEFAULT_FONT in fonts:
+if DEFAULT_FONT not in fonts:
     DEFAULT_FONT = pygame.font.get_default_font()
 
 score_font = pygame.font.SysFont(SCORE_FONT, 64)
 # A test string so we can get some data positioning for later
 score_size = score_font.render("10", True, white).get_size()
-print score_size
 score_width = score_size[0]
 score_height = score_size[1]
 ######################################################################
@@ -80,10 +79,19 @@ score_width = 76
 
 # centerx is the horizontal mid-point of the rectangle
 # centery is the vertical mid-point of the rectangle
-dividing_line = pygame.Rect(court_rect.centerx, court_rect.top + 2, 8, court_rect.height - 2)
+dividing_line = pygame.Rect(court_rect.centerx,
+                            court_rect.top + 2,
+                            8,
+                            court_rect.height - 2)
 
-score_region_l = pygame.Rect(dividing_line.left - score_width - 16, dividing_line.top, score_width, score_height)
-score_region_r = pygame.Rect(dividing_line.right + 16, dividing_line.top, score_width, score_height)
+score_region_l = pygame.Rect(dividing_line.left - score_width - 16,
+                             dividing_line.top,
+                             score_width,
+                             score_height)
+score_region_r = pygame.Rect(dividing_line.right + 16,
+                             dividing_line.top,
+                             score_width,
+                             score_height)
 
 
 while 1:
@@ -119,7 +127,6 @@ while 1:
     screen.blit(score_surface_l, score_region_l)
     score_surface_r = score_font.render(right_score, True, white)
     screen.blit(score_surface_r, score_region_r)
-
 
     ##################################################################
     pygame.display.flip()

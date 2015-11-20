@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import math
 import random
 # import sys
 # http://www.pygame.org/docs/ref/pygame.html
@@ -22,14 +21,9 @@ os.environ["SDL_VIDEO_CENTERED"] = "TRUE"
 
 ######################################################################
 import pong
-
 ######################################################################
 # CONSTANTLY CONSTANT STUFF
-PADDLE_LEFT = -1
-PADDLE_RIGHT = 1
-
 DISPLAY_ICON = "assets/icon.png"
-
 
 # Reference stuff
 # http://www.pygame.org/docs/ref/rect.html
@@ -44,118 +38,6 @@ court_height = 464
 court_rect = pygame.Rect(8, 8, court_width, court_height)
 
 ######################################################################
-# Some funcs
-
-# Alias math.radians() to just 'rads'
-rads = math.radians
-degs = math.degrees
-
-
-
-######################################################################
-class PongPaddle(pygame.sprite.Sprite):
-    HEIGHT = 64
-    WIDTH = 16
-    # White
-    COLOR = (255, 255, 255)
-    # red
-    # COLOR = (255, 0, 0)
-    VELOCITY = 10
-
-    # Constructor. Pass in the color of the block,
-    # and its x and y position
-    def __init__(self, side, walls, surface):
-        """Initialize a pong paddle. The ``side`` parameter is one of
-``PADDLE_LEFT`` or ``PADDLE_RIGHT``
-        """
-        # Call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
-
-        self.surface = surface
-
-        # Create an image of the block, and fill it with a color.
-        # This could also be an image loaded from the disk.
-        self.image = pygame.Surface([self.WIDTH, self.HEIGHT])
-        self.image.fill(self.COLOR)
-
-        # Store our bounding walls and our paddle side
-        self.side = side
-        self.walls = walls
-
-        # Paddles are left/right specific. Each paddle responds to a
-        # different set of keyboard input codes.
-        if self.side == PADDLE_LEFT:
-            self.up = pygame.K_w
-            self.down = pygame.K_s
-        elif self.side == PADDLE_RIGHT:
-            self.up = pygame.K_UP
-            self.down = pygame.K_DOWN
-
-        # Fetch the rectangle object that has the dimensions of the image
-        # Update the position of this object by setting the values of rect.x and rect.y
-        self.rect = self.image.get_rect()
-        self._init_pos()
-
-    def _init_pos(self):
-        ######################################################################
-        # Calculate initial positions for the paddles. Each init pos
-        # is based off of the closest wall (vertical boundary rect)
-        if self.side == PADDLE_LEFT:
-            self.rect.center = self.walls[3].midright
-            self.rect.move_ip(8 * 3, 0)
-        elif self.side == PADDLE_RIGHT:
-            self.rect.center = self.walls[1].midleft
-            self.rect.move_ip(-8 * 3, 0)
-
-    def hit_border(self, dy):
-        """Calculate using our dy (change in up/down) if we hit a
-ceiling/floor.
-
-If we are *already* in collission with something, allow movement away
-from the object. Do not allow movement further into the object.
-
-Return data:
-
-* ``True`` if we need to shut this shit down (we hit something)
-* ``False`` if we may continue moving
-        """
-        # Just how far up and down we do want to allow the paddle to
-        # go? I suppose we'd want to allow up to the bottom edge of
-        # the top floor and the top edge of the bottom floor.
-
-        # hitting the top floor. Then our rect.top (coordinate?) will
-        # intersect with self.walls[0]
-        #
-        # hitting the bottom floor. Then out rect.bottom (coordinate?)
-        # will intersect with self.walls[2]
-        next_pos = self.rect.move(0, dy)
-        hit_point = next_pos.collidelist(self.walls)
-
-        # OK. We know if this was a floor/ceiling:
-        # 0 and 2 are the top border and bottom border
-        if hit_point in [0, 2]:
-            return True
-        return False
-
-    def update(self):
-        # Valid movement paths for paddles:
-        #
-        # rect.topleft going up until hitting a ceiling (wall[0])
-        # rect.bottomleft going down until hitting a floor (wall[2])
-        # No horizontal movement
-        kb_input = pygame.key.get_pressed()
-        dy = 0
-        if kb_input[self.up] == 1:
-            dy = -self.VELOCITY
-        elif kb_input[self.down] == 1:
-            dy = self.VELOCITY
-
-        if not self.hit_border(dy):
-            self.rect.move_ip(0, dy)
-        else:
-            pass
-
-        self.surface.blit(self.image, self.rect)
 
 
 ######################################################################
@@ -163,14 +45,6 @@ screen_w = court_width + (court_margin * 2)
 screen_h = court_height + (court_margin * 2)
 screen_dim = (screen_w, screen_h)
 
-######################################################################
-black = (000, 000, 000)
-white = (255, 255, 255)
-red = (255, 0, 0)
-orange = (255, 128, 0)
-yellow = (255, 255, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
 
 ######################################################################
 # The screen borders
@@ -179,7 +53,7 @@ screen_top = pygame.Rect(court_rect.topleft, (court_rect.w, 2))
 screen_right = pygame.Rect(court_rect.topright, (2, court_rect.h + 2))
 screen_bottom = pygame.Rect(court_rect.bottomleft, (court_rect.w, 2))
 screen_left = pygame.Rect(court_rect.topleft, (2, court_rect.h))
-wall_names = ["top", "right", "bottom", "left"]
+# wall_names = ["top", "right", "bottom", "left"]
 wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 
 ######################################################################
@@ -201,8 +75,8 @@ allowed_angles = set(all_angles) - bad_top_angles.union(bad_bottom_angles)
 angle = random.choice(list(allowed_angles))
 
 paddles = pygame.sprite.Group()
-paddles.add(PongPaddle(PADDLE_LEFT, wall_list, screen))
-paddles.add(PongPaddle(PADDLE_RIGHT, wall_list, screen))
+paddles.add(pong.PongPaddle(pong.PADDLE_LEFT, wall_list, screen))
+paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list, screen))
 ball = pong.PongBall(screen, wall_list, paddles, angle=float(angle))
 
 while 1:
@@ -219,13 +93,13 @@ while 1:
         pygame.display.toggle_fullscreen()
 
     clock.tick(30)
-    screen.fill(white)
+    screen.fill(pong.white)
     # This is the court, it's black
-    court_area = pygame.draw.rect(screen, black, court_rect)
-    pygame.draw.rect(screen, white, screen_right)
-    pygame.draw.rect(screen, white, screen_left)
-    pygame.draw.rect(screen, white, screen_bottom)
-    pygame.draw.rect(screen, white, screen_top)
+    court_area = pygame.draw.rect(screen, pong.black, court_rect)
+    pygame.draw.rect(screen, pong.white, screen_right)
+    pygame.draw.rect(screen, pong.white, screen_left)
+    pygame.draw.rect(screen, pong.white, screen_bottom)
+    pygame.draw.rect(screen, pong.white, screen_top)
     ball.update()
     paddles.update()
     pygame.display.flip()
