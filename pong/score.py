@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import pong
+import logging
 import random
 # import sys
 # http://www.pygame.org/docs/ref/pygame.html
@@ -12,15 +14,17 @@ import pygame.key
 # http://www.pygame.org/docs/ref/draw.html
 import pygame.draw
 # http://www.pygame.org/docs/ref/time.html
+import time
 import pygame.time
 
+import random
 import os
 import sys
 sys.path.insert(0, os.path.realpath('.'))
 os.environ["SDL_VIDEO_CENTERED"] = "TRUE"
 
 ######################################################################
-import pong
+
 ######################################################################
 # CONSTANTLY CONSTANT STUFF
 DISPLAY_ICON = "assets/icon.png"
@@ -38,7 +42,13 @@ court_height = 464
 court_rect = pygame.Rect(8, 8, court_width, court_height)
 
 ######################################################################
-
+log = logging.getLogger("pong")
+log.setLevel(logging.DEBUG)
+log_stream_handler = logging.StreamHandler()
+log_stream_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s  - %(message)s"))
+log_stream_handler.setLevel(logging.DEBUG)
+log.addHandler(log_stream_handler)
+log.info("Logging initialized")
 
 ######################################################################
 screen_w = court_width + (court_margin * 2)
@@ -63,21 +73,20 @@ icon = pygame.image.load(DISPLAY_ICON)
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Pongu")
 clock = pygame.time.Clock()
+if '-f' in sys.argv or '--fullscreen' in sys.argv:
+    pygame.display.toggle_fullscreen()
 
 ######################################################################
 # The pong ball
-#
-# Unacceptable initial angles
-bad_top_angles = set(xrange(80, 101))
-bad_bottom_angles = set(xrange(270, 291))
-all_angles = set(xrange(0, 360))
-allowed_angles = set(all_angles) - bad_top_angles.union(bad_bottom_angles)
-angle = random.choice(list(allowed_angles))
-
 paddles = pygame.sprite.Group()
 paddles.add(pong.PongPaddle(pong.PADDLE_LEFT, wall_list, screen))
 paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list, screen))
-ball = pong.PongBall(screen, wall_list, paddles, angle=float(angle))
+
+def new_ball():
+    angle = float(random.randrange(0,359))
+    logging.getLogger('pong').debug("Projectile angle: %s" % angle)
+    # return pong.PongBall(wall_list, paddles, angle=angle)
+    return pong.PongBall(wall_list, paddles, angle=15)
 
 ######################################################################
 # Fonts
@@ -101,23 +110,30 @@ score_width = 76
 
 # centerx is the horizontal mid-point of the rectangle
 # centery is the vertical mid-point of the rectangle
-dividing_line = pygame.Rect(court_rect.centerx,
+dividing_line = pygame.Rect(court_rect.centerx - 4,
                             court_rect.top + 2,
-                            8,
+                            6,
                             court_rect.height - 2)
 
-score_region_l = pygame.Rect(dividing_line.left - score_width - 16,
+score_region_l = pygame.Rect((screen_rect.width * .25) - score_width * .5,
                              dividing_line.top,
                              score_width,
                              score_height)
-score_region_r = pygame.Rect(dividing_line.right + 16,
+score_region_r = pygame.Rect((screen_rect.width * .75  - score_width * .5,
                              dividing_line.top,
                              score_width,
-                             score_height)
+                             score_height))
 
 
+LEFT_SCORE = 0
+RIGHT_SCORE = 0
+
+ball = new_ball()
 
 while 1:
+    ######################################################################
+    # Basic handlers and static assets
+    clock.tick(30)
     for event in pygame.event.get():
         # Enable the 'close window' button
         if event.type == pygame.QUIT:
@@ -130,20 +146,21 @@ while 1:
     if kb_input[pygame.K_f] == 1:
         pygame.display.toggle_fullscreen()
 
-    ######################################################################
-    clock.tick(30)
-    screen.fill(pong.white)
-    # This is the court, it's black
-    court_area = pygame.draw.rect(screen, pong.black, court_rect)
+    # This clears out the trails left by moving objects
+    screen.fill(pong.black)
+
+    # These are the bounding walls of the court.
+    #
+    # These silly screen_<DIR> vars are Rect()s. They're defined above
     pygame.draw.rect(screen, pong.white, screen_right)
     pygame.draw.rect(screen, pong.white, screen_left)
     pygame.draw.rect(screen, pong.white, screen_bottom)
     pygame.draw.rect(screen, pong.white, screen_top)
     ######################################################################
     pygame.draw.rect(screen, pong.white, dividing_line)
-
-    left_score = pong.score_digitize(10)
-    right_score = pong.score_digitize(10)
+    ######################################################################
+    left_score = pong.score_digitize(LEFT_SCORE)
+    right_score = pong.score_digitize(RIGHT_SCORE)
 
     # # Create a surface (score) to blit onto the screen
     score_surface_l = score_font.render(left_score, True, pong.white)
@@ -151,7 +168,24 @@ while 1:
     score_surface_r = score_font.render(right_score, True, pong.white)
     screen.blit(score_surface_r, score_region_r)
 
+    # court_area = pygame.draw.rect(screen, pong.green, court_rect)
+
+
     ######################################################################
-    ball.update()
+    ball_play = ball.update()
+    # 1 and 3 are the indicie of the right and left walls
+    if not ball_play:
+        pass
+    elif ball_play == 1:
+        log.debug("hit right: %s" % ball_play)
+        # Hitting the right wall is a point for the left player
+        LEFT_SCORE += 1
+        ball = new_ball()
+    elif ball_play == 3:
+        log.debug("hit left")
+        # And the left wall is a point for the right player
+        ball = new_ball()
+        RIGHT_SCORE += 1
+
     paddles.update()
     pygame.display.flip()

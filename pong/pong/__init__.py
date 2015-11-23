@@ -1,5 +1,9 @@
+import logging
+import time
+import pygame.font
 import pygame.rect
 import pygame.draw
+import pygame.sprite
 import math
 
 PADDLE_LEFT = -1
@@ -17,6 +21,7 @@ green = (0, 255, 0)
 blue = (0, 0, 255)
 ######################################################################
 
+
 # Is this a wall?
 def is_wall(rect):
     # Is the height greater than the width?
@@ -29,12 +34,6 @@ def score_digitize(score):
         return " {}".format(str(score))
     else:
         return str(score)
-
-
-class Player(object):
-    def __init__(self, side):
-        self.side = side
-
 
 ######################################################################
 class PongPaddle(pygame.sprite.Sprite):
@@ -54,6 +53,7 @@ class PongPaddle(pygame.sprite.Sprite):
         """
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
+        self.log = logging.getLogger('pong')
 
         self.surface = surface
 
@@ -143,21 +143,21 @@ Return data:
 
 
 ######################################################################
-class PongBall(object):
-    white = (255, 255, 255)
+class PongBall(pygame.sprite.Sprite):
 
-    def __init__(self, surface, walls, paddles, velocity=8, angle=0.0, color=(255, 255, 255)):
-        self.surface = surface
-        # A dict of walls
+    def __init__(self, walls, paddles, velocity=10, angle=0.0):
+        self.log = logging.getLogger('pong')
+        self.surface = pygame.display.get_surface()
+        self.surface_rect = self.surface.get_rect()
         self.walls = walls
         self.paddles = paddles
         self.velocity = velocity
         self.angle = angle
-        self.color = color
-        self.center = self.surface.get_rect().center
         self.width = 10
         self.height = 10
-        self.rect = pygame.Rect(self.center, (self.width, self.height))
+        self.rect = self.surface_rect.inflate(-1 * (self.surface_rect.width - self.width), -1 * (self.surface_rect.height - self.height))
+        self.image = pygame.Surface([self.width, self.height])
+        self.image.fill(red)
 
     def hit_paddle(self):
         for paddle in self.paddles.sprites():
@@ -187,11 +187,30 @@ class PongBall(object):
             #
             # Is it vertical (a wall?), or horizontal (a floor/ceil)?
             if is_wall(self.walls[boundary]):
-                next_x = -1 * (self.velocity * math.cos(math.radians(self.angle)))
+                # next_x = -1 * (self.velocity * math.cos(math.radians(self.angle)))
+                self.log.debug("boundary: {}".format(boundary))
+                return boundary
             else:
                 next_y = -1 * (self.velocity * math.sin(math.radians(self.angle)))
 
         self.angle = math.degrees(math.atan2(next_y, next_x))
-
         self.rect.move_ip(next_x, next_y)
-        pygame.draw.rect(self.surface, self.color, self.rect)
+        self.surface.blit(self.image, self.rect)
+        # pygame.draw.rect(self.surface, self.color, self.rect)
+        return False
+
+class PongScore(pygame.sprite.Sprite):
+    """The basic Sprite class can draw the Sprites it contains to a
+Surface. The 'Group.draw - blit the Sprite images' method requires:
+
+* that each Sprite have a Surface.image attribute
+* a Surface.rect.
+
+The Group.clear - draw a background over the Sprites method requires
+these same attributes, and can be used to erase all the Sprites with
+background.
+    """
+    def __init__(self, x, y):
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self)
+        self.score = 0
