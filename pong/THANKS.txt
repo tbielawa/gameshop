@@ -4,3 +4,10 @@ Thanks for the following:
 * The window icon:
 
     https://github.com/bozidarsevo/sprite-kit-pong
+
+* Sweet fonts!
+
+    http://www.fontspace.com/glitch/arcade-classic
+    http://www.fontspace.com/total-fontgeek-dtf-ltd/quantifier-nbp
+
+
