@@ -10,6 +10,8 @@ PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
 DEFAULT_FONT = "sourcecodepro"
 SCORE_FONT = DEFAULT_FONT
+# BUNDLED_FONT = "assets/Quantifier.ttf"
+BUNDLED_FONT = "assets/ArcadeClassic.ttf"
 
 ######################################################################
 black = (000, 000, 000)
@@ -20,7 +22,6 @@ yellow = (255, 255, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
 ######################################################################
-
 
 # Is this a wall?
 def is_wall(rect):
@@ -157,7 +158,7 @@ class PongBall(pygame.sprite.Sprite):
         self.height = 10
         self.rect = self.surface_rect.inflate(-1 * (self.surface_rect.width - self.width), -1 * (self.surface_rect.height - self.height))
         self.image = pygame.Surface([self.width, self.height])
-        self.image.fill(red)
+        self.image.fill(white)
 
     def hit_paddle(self):
         for paddle in self.paddles.sprites():

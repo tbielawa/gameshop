@@ -71,10 +71,12 @@ pygame.init()
 screen = pygame.display.set_mode(screen_dim)
 icon = pygame.image.load(DISPLAY_ICON)
 pygame.display.set_icon(icon)
-pygame.display.set_caption("Pongu")
+pygame.display.set_caption("TBLABLABONG")
 clock = pygame.time.Clock()
 if '-f' in sys.argv or '--fullscreen' in sys.argv:
     pygame.display.toggle_fullscreen()
+    pygame.mouse.set_visible(False)
+
 
 ######################################################################
 # The pong ball
@@ -91,11 +93,12 @@ def new_ball():
 ######################################################################
 # Fonts
 pygame.font.init()
-fonts = pygame.font.get_fonts()
-if pong.DEFAULT_FONT not in fonts:
-    pong.DEFAULT_FONT = pygame.font.get_default_font()
+# fonts = pygame.font.get_fonts()
+# if pong.DEFAULT_FONT not in fonts:
+#     pong.DEFAULT_FONT = pygame.font.get_default_font()
 
-score_font = pygame.font.SysFont(pong.SCORE_FONT, 64)
+# score_font = pygame.font.SysFont(pong.SCORE_FONT, 64)
+score_font = pygame.font.Font(pong.BUNDLED_FONT, 64)
 # A test string so we can get some data positioning for later
 score_size = score_font.render("10", True, pong.white).get_size()
 score_width = score_size[0]
@@ -116,11 +119,11 @@ dividing_line = pygame.Rect(court_rect.centerx - 4,
                             court_rect.height - 2)
 
 score_region_l = pygame.Rect((screen_rect.width * .25) - score_width * .5,
-                             dividing_line.top,
+                             dividing_line.top + 10,
                              score_width,
                              score_height)
 score_region_r = pygame.Rect((screen_rect.width * .75  - score_width * .5,
-                             dividing_line.top,
+                             dividing_line.top + 10,
                              score_width,
                              score_height))
 
@@ -130,10 +133,15 @@ RIGHT_SCORE = 0
 
 ball = new_ball()
 
+game_start_time = time.time()
+
 while 1:
     ######################################################################
     # Basic handlers and static assets
     clock.tick(30)
+    # How long since we started the game (in seconds)
+    dt = time.time() - game_start_time
+
     for event in pygame.event.get():
         # Enable the 'close window' button
         if event.type == pygame.QUIT:
@@ -157,19 +165,25 @@ while 1:
     pygame.draw.rect(screen, pong.white, screen_bottom)
     pygame.draw.rect(screen, pong.white, screen_top)
     ######################################################################
-    pygame.draw.rect(screen, pong.white, dividing_line)
+
     ######################################################################
     left_score = pong.score_digitize(LEFT_SCORE)
     right_score = pong.score_digitize(RIGHT_SCORE)
 
-    # # Create a surface (score) to blit onto the screen
-    score_surface_l = score_font.render(left_score, True, pong.white)
-    screen.blit(score_surface_l, score_region_l)
-    score_surface_r = score_font.render(right_score, True, pong.white)
-    screen.blit(score_surface_r, score_region_r)
+    # Create a surface (score) to blit onto the screen
+    if dt <= 3:
+        banner = score_font.render("TBLABLABONG", True, pong.white)
+        banner_rect = banner.get_rect(center=screen_rect.center)
+        screen.blit(banner, banner_rect)
+        pygame.display.flip()
+        continue
+    else:
+        score_surface_l = score_font.render(left_score, True, pong.white)
+        screen.blit(score_surface_l, score_region_l)
+        score_surface_r = score_font.render(right_score, True, pong.white)
+        screen.blit(score_surface_r, score_region_r)
 
-    # court_area = pygame.draw.rect(screen, pong.green, court_rect)
-
+    pygame.draw.rect(screen, pong.white, dividing_line)
 
     ######################################################################
     ball_play = ball.update()
