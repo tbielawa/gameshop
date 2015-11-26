@@ -51,8 +51,8 @@ log.addHandler(log_stream_handler)
 log.info("Logging initialized")
 
 ######################################################################
-screen_w = court_width + (court_margin * 2)
-screen_h = court_height + (court_margin * 2)
+screen_w = 1280
+screen_h = 720
 screen_dim = (screen_w, screen_h)
 
 
