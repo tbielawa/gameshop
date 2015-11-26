@@ -17,7 +17,6 @@ import pygame.draw
 import time
 import pygame.time
 
-import random
 import os
 import sys
 sys.path.insert(0, os.path.realpath('.'))
@@ -37,9 +36,10 @@ DISPLAY_ICON = "assets/icon.png"
 
 ######################################################################
 court_margin = 8
-court_width = 624
-court_height = 464
-court_rect = pygame.Rect(8, 8, court_width, court_height)
+court_width = 1124
+court_height = 632
+court_rect = pygame.Rect(78, 44, court_width, court_height)
+# We'll make the actual court_rect once we have a screen
 
 ######################################################################
 log = logging.getLogger("pong")
@@ -53,8 +53,19 @@ log.info("Logging initialized")
 ######################################################################
 screen_w = 1280
 screen_h = 720
-screen_dim = (screen_w, screen_h)
 
+######################################################################
+pygame.init()
+screen = pygame.display.set_mode((screen_w, screen_h))
+icon = pygame.image.load(DISPLAY_ICON)
+pygame.display.set_icon(icon)
+pygame.display.set_caption("TBLABLABONG")
+clock = pygame.time.Clock()
+if '-f' in sys.argv or '--fullscreen' in sys.argv:
+    pygame.display.toggle_fullscreen()
+    pygame.mouse.set_visible(False)
+
+screen_rect = screen.get_rect()
 
 ######################################################################
 # The screen borders
@@ -69,37 +80,22 @@ wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 h_walls = pygame.sprite.Group()
 v_walls = pygame.sprite.Group()
 
-
-######################################################################
-pygame.init()
-screen = pygame.display.set_mode(screen_dim)
-icon = pygame.image.load(DISPLAY_ICON)
-pygame.display.set_icon(icon)
-pygame.display.set_caption("TBLABLABONG")
-clock = pygame.time.Clock()
-if '-f' in sys.argv or '--fullscreen' in sys.argv:
-    pygame.display.toggle_fullscreen()
-    pygame.mouse.set_visible(False)
-
-
 ######################################################################
 # The pong ball
 paddles = pygame.sprite.Group()
 paddles.add(pong.PongPaddle(pong.PADDLE_LEFT, wall_list, screen))
 paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list, screen))
 
+
 def new_ball():
-    angle = float(random.randrange(0,359))
+    angle = float(random.randrange(0, 359))
     logging.getLogger('pong').debug("Projectile angle: %s" % angle)
     # return pong.PongBall(wall_list, paddles, angle=angle)
-    return pong.PongBall(wall_list, paddles, angle=15)
+    return pong.PongBall(wall_list, paddles, velocity=15, angle=angle)
 
 ######################################################################
 # Fonts
 pygame.font.init()
-# fonts = pygame.font.get_fonts()
-# if pong.DEFAULT_FONT not in fonts:
-#     pong.DEFAULT_FONT = pygame.font.get_default_font()
 
 # score_font = pygame.font.SysFont(pong.SCORE_FONT, 64)
 score_font = pygame.font.Font(pong.BUNDLED_FONT, 64)
@@ -108,7 +104,7 @@ score_size = score_font.render("10", True, pong.white).get_size()
 score_width = score_size[0]
 score_height = score_size[1]
 ######################################################################
-screen_rect = screen.get_rect()
+
 s_rect_w = screen_rect.width
 s_rect_h = screen_rect.height
 
@@ -119,7 +115,7 @@ score_region_l = pygame.Rect((screen_rect.width * .25) - score_width * .5,
                              44,
                              score_width,
                              score_height)
-score_region_r = pygame.Rect((screen_rect.width * .75  - score_width * .5,
+score_region_r = pygame.Rect((screen_rect.width * .75 - score_width * .5,
                              44,
                              score_width,
                              score_height))
@@ -153,15 +149,6 @@ while 1:
 
     # This clears out the trails left by moving objects
     screen.fill(pong.black)
-
-    # These are the bounding walls of the court.
-    #
-    # These silly screen_<DIR> vars are Rect()s. They're defined above
-    pygame.draw.rect(screen, pong.white, screen_right)
-    pygame.draw.rect(screen, pong.white, screen_left)
-    pygame.draw.rect(screen, pong.white, screen_bottom)
-    pygame.draw.rect(screen, pong.white, screen_top)
-    ######################################################################
 
     ######################################################################
     left_score = pong.score_digitize(LEFT_SCORE)

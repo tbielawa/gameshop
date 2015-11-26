@@ -1,10 +1,9 @@
 import logging
-import time
+import math
+import pygame.draw
 import pygame.font
 import pygame.rect
-import pygame.draw
 import pygame.sprite
-import math
 
 PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
@@ -23,6 +22,7 @@ green = (0, 255, 0)
 blue = (0, 0, 255)
 ######################################################################
 
+
 # Is this a wall?
 def is_wall(rect):
     # Is the height greater than the width?
@@ -35,6 +35,7 @@ def score_digitize(score):
         return " {}".format(str(score))
     else:
         return str(score)
+
 
 ######################################################################
 class PongPaddle(pygame.sprite.Sprite):
@@ -199,6 +200,7 @@ class PongBall(pygame.sprite.Sprite):
         # pygame.draw.rect(self.surface, self.color, self.rect)
         return False
 
+
 class PongScore(pygame.sprite.Sprite):
     """The basic Sprite class can draw the Sprites it contains to a
 Surface. The 'Group.draw - blit the Sprite images' method requires:
@@ -214,7 +216,6 @@ background.
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         self.score = 0
-
 
 
 class AnnoyingSplashScreen(pygame.sprite.Sprite):
