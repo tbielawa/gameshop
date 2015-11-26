@@ -134,6 +134,8 @@ game_start_time = time.time()
 
 splash_screen = pong.AnnoyingSplashScreen()
 
+court_skirt = pong.CourtSkirt()
+
 while 1:
     ######################################################################
     # Basic handlers and static assets
@@ -171,6 +173,7 @@ while 1:
         # screen.blit(banner, banner_rect)
         splash_screen.update()
         pygame.display.flip()
+        # Press any key to skip the intro
         if 1 in kb_input:
             show_splash = False
         continue
@@ -181,9 +184,12 @@ while 1:
         screen.blit(score_surface_r, score_region_r)
 
     # pygame.draw.rect(screen, pong.white, dividing_line)
+    paddles.update()
+    court_skirt.update()
     dividing_line.update()
 
     ######################################################################
+
     ball_play = ball.update()
     # 1 and 3 are the indicie of the right and left walls
     if not ball_play:
@@ -199,5 +205,5 @@ while 1:
         ball = new_ball()
         RIGHT_SCORE += 1
 
-    paddles.update()
+
     pygame.display.flip()

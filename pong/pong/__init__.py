@@ -89,10 +89,10 @@ class PongPaddle(pygame.sprite.Sprite):
         # is based off of the closest wall (vertical boundary rect)
         if self.side == PADDLE_LEFT:
             self.rect.center = self.walls[3].midright
-            self.rect.move_ip(8 * 3, 0)
+            self.rect.move_ip(8 * 5, 0)
         elif self.side == PADDLE_RIGHT:
             self.rect.center = self.walls[1].midleft
-            self.rect.move_ip(-8 * 3, 0)
+            self.rect.move_ip(-8 * 5, 0)
 
     def hit_border(self, dy):
         """Calculate using our dy (change in up/down) if we hit a
@@ -254,6 +254,20 @@ class CourtDividingLine(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.surface_rect.center)
         self.top = self.rect.top
         self.log.info("Dividing line top at: %s" % self.top)
+
+    def update(self):
+        self.surface.blit(self.image, self.rect)
+
+
+class CourtSkirt(pygame.sprite.Sprite):
+    """"Skirt" because it's on the bottom and it hides only a little bit
+    """
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((1280, 44))
+        self.image.fill(black)
+        self.rect = self.image.get_rect(topleft=(0, 676))
+        self.surface = pygame.display.get_surface()
 
     def update(self):
         self.surface.blit(self.image, self.rect)
