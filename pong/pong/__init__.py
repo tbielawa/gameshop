@@ -45,7 +45,7 @@ class PongPaddle(pygame.sprite.Sprite):
     COLOR = (255, 255, 255)
     # red
     # COLOR = (255, 0, 0)
-    VELOCITY = 10
+    VELOCITY = 15
 
     # Constructor. Pass in the color of the block,
     # and its x and y position
@@ -230,8 +230,9 @@ class CourtDividingLine(pygame.sprite.Sprite):
         self.log = logging.getLogger('pong')
         self.surface = pygame.display.get_surface()
         self.surface_rect = self.surface.get_rect()
-        self.image = pygame.surface.Surface([6, self.surface_rect.height])
-        self.image.fill(white)
+        # self.image = pygame.surface.Surface([6, self.surface_rect.height])
+        # self.image.fill(white)
+        self.image = pygame.image.load('assets/dividing_line.png')
         self.rect = self.image.get_rect(center=self.surface_rect.center)
         self.top = self.rect.top
         self.log.info("Dividing line top at: %s" % self.top)
