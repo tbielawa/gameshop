@@ -114,20 +114,13 @@ s_rect_h = screen_rect.height
 
 score_width = 76
 
-
-# centerx is the horizontal mid-point of the rectangle
-# centery is the vertical mid-point of the rectangle
-dividing_line = pygame.Rect(court_rect.centerx - 4,
-                            court_rect.top + 2,
-                            6,
-                            court_rect.height - 2)
-
+dividing_line = pong.CourtDividingLine()
 score_region_l = pygame.Rect((screen_rect.width * .25) - score_width * .5,
-                             dividing_line.top + 10,
+                             44,
                              score_width,
                              score_height)
 score_region_r = pygame.Rect((screen_rect.width * .75  - score_width * .5,
-                             dividing_line.top + 10,
+                             44,
                              score_width,
                              score_height))
 
@@ -187,7 +180,8 @@ while 1:
         score_surface_r = score_font.render(right_score, True, pong.white)
         screen.blit(score_surface_r, score_region_r)
 
-    pygame.draw.rect(screen, pong.white, dividing_line)
+    # pygame.draw.rect(screen, pong.white, dividing_line)
+    dividing_line.update()
 
     ######################################################################
     ball_play = ball.update()

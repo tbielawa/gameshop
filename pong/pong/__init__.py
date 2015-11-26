@@ -221,3 +221,20 @@ class AnnoyingSplashScreen(pygame.sprite.Sprite):
     """A classic annoying splash screen you are unable to bypass"""
     def __init__(self):
         pass
+
+
+class CourtDividingLine(pygame.sprite.Sprite):
+    """A simple vertical line through the middle of the screen"""
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.log = logging.getLogger('pong')
+        self.surface = pygame.display.get_surface()
+        self.surface_rect = self.surface.get_rect()
+        self.image = pygame.surface.Surface([6, self.surface_rect.height])
+        self.image.fill(white)
+        self.rect = self.image.get_rect(center=self.surface_rect.center)
+        self.top = self.rect.top
+        self.log.info("Dividing line top at: %s" % self.top)
+
+    def update(self):
+        self.surface.blit(self.image, self.rect)
