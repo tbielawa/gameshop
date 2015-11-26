@@ -65,16 +65,20 @@ if '-f' in sys.argv or '--fullscreen' in sys.argv:
     pygame.display.toggle_fullscreen()
     pygame.mouse.set_visible(False)
 
+show_splash = True
+if '-q' in sys.argv or '--quick' in sys.argv:
+    show_splash = False
+
 screen_rect = screen.get_rect()
 
 ######################################################################
 # The screen borders
 #     Rect(left, top, width, height) -> Rect
-screen_top = pygame.Rect(court_rect.topleft, (court_rect.w, 2))
-screen_right = pygame.Rect(court_rect.topright, (2, court_rect.h + 2))
-screen_bottom = pygame.Rect(court_rect.bottomleft, (court_rect.w, 2))
-screen_left = pygame.Rect(court_rect.topleft, (2, court_rect.h))
-# wall_names = ["top", "right", "bottom", "left"]
+screen_top = pygame.Rect(0, 0, screen_w, 1)
+screen_bottom = pygame.Rect(0, screen_h, screen_w, 1)
+screen_right = pygame.Rect(screen_w, 0, 1, screen_h)
+screen_left = pygame.Rect(0, 0, 1, screen_h)
+
 wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 
 h_walls = pygame.sprite.Group()
@@ -133,7 +137,11 @@ while 1:
     # Basic handlers and static assets
     clock.tick(30)
     # How long since we started the game (in seconds)
-    dt = time.time() - game_start_time
+    if show_splash:
+        dt = time.time() - game_start_time
+    else:
+        # Fake setting the time so we can skip the splash
+        dt = 10
 
     for event in pygame.event.get():
         # Enable the 'close window' button

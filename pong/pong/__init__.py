@@ -146,7 +146,6 @@ Return data:
 
 ######################################################################
 class PongBall(pygame.sprite.Sprite):
-
     def __init__(self, walls, paddles, velocity=10, angle=0.0):
         self.log = logging.getLogger('pong')
         self.surface = pygame.display.get_surface()
