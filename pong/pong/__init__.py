@@ -221,7 +221,24 @@ background.
 class AnnoyingSplashScreen(pygame.sprite.Sprite):
     """A classic annoying splash screen you are unable to bypass"""
     def __init__(self):
-        pass
+        pygame.sprite.Sprite.__init__(self)
+
+        splash_font = pygame.font.Font(BUNDLED_FONT, 64)
+        instruct_font = pygame.font.Font(BUNDLED_FONT, 24)
+
+        # Title
+        self.banner = splash_font.render("TBLABLABONG", True, white)
+        self.banner_rect = self.banner.get_rect(center=pygame.display.get_surface().get_rect().center)
+
+        # Instructions
+        self.instructions = instruct_font.render("[w] up;  [s] down;  [f]  full screen;  [q] quit", True, white)
+        instructions_midtop = self.banner_rect.midbottom
+        self.instructions_rect = self.instructions.get_rect(midtop=(instructions_midtop[0], instructions_midtop[1] + 24))
+
+    def update(self):
+        surface = pygame.display.get_surface()
+        surface.blit(self.banner, self.banner_rect)
+        surface.blit(self.instructions, self.instructions_rect)
 
 
 class CourtDividingLine(pygame.sprite.Sprite):

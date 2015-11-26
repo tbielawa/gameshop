@@ -132,6 +132,8 @@ ball = new_ball()
 
 game_start_time = time.time()
 
+splash_screen = pong.AnnoyingSplashScreen()
+
 while 1:
     ######################################################################
     # Basic handlers and static assets
@@ -163,11 +165,14 @@ while 1:
     right_score = pong.score_digitize(RIGHT_SCORE)
 
     # Create a surface (score) to blit onto the screen
-    if dt <= 3:
-        banner = score_font.render("TBLABLABONG", True, pong.white)
-        banner_rect = banner.get_rect(center=screen_rect.center)
-        screen.blit(banner, banner_rect)
+    if dt <= 4:
+        # banner = score_font.render("TBLABLABONG", True, pong.white)
+        # banner_rect = banner.get_rect(center=screen_rect.center)
+        # screen.blit(banner, banner_rect)
+        splash_screen.update()
         pygame.display.flip()
+        if 1 in kb_input:
+            show_splash = False
         continue
     else:
         score_surface_l = score_font.render(left_score, True, pong.white)
