@@ -66,6 +66,10 @@ screen_left = pygame.Rect(court_rect.topleft, (2, court_rect.h))
 # wall_names = ["top", "right", "bottom", "left"]
 wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 
+h_walls = pygame.sprite.Group()
+v_walls = pygame.sprite.Group()
+
+
 ######################################################################
 pygame.init()
 screen = pygame.display.set_mode(screen_dim)
