@@ -157,8 +157,7 @@ class PongBall(pygame.sprite.Sprite):
         self.width = 10
         self.height = 10
         self.rect = self.surface_rect.inflate(-1 * (self.surface_rect.width - self.width), -1 * (self.surface_rect.height - self.height))
-        self.image = pygame.Surface([self.width, self.height])
-        self.image.fill(white)
+        self.image = pygame.image.load('assets/ball.png')
 
     def hit_paddle(self):
         for paddle in self.paddles.sprites():
@@ -215,3 +214,10 @@ background.
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         self.score = 0
+
+
+
+class AnnoyingSplashScreen(pygame.sprite.Sprite):
+    """A classic annoying splash screen you are unable to bypass"""
+    def __init__(self):
+        pass
