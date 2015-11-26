@@ -61,8 +61,9 @@ class PongPaddle(pygame.sprite.Sprite):
 
         # Create an image of the block, and fill it with a color.
         # This could also be an image loaded from the disk.
-        self.image = pygame.Surface([self.WIDTH, self.HEIGHT])
-        self.image.fill(self.COLOR)
+        # self.image = pygame.Surface([self.WIDTH, self.HEIGHT])
+        # self.image.fill(self.COLOR)
+        self.image = pygame.image.load('assets/paddle.png')
 
         # Store our bounding walls and our paddle side
         self.side = side
