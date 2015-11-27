@@ -7,9 +7,6 @@ import pygame.sprite
 
 PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
-DEFAULT_FONT = "sourcecodepro"
-SCORE_FONT = DEFAULT_FONT
-# BUNDLED_FONT = "assets/Quantifier.ttf"
 BUNDLED_FONT = "assets/ArcadeClassic.ttf"
 
 ######################################################################
@@ -279,3 +276,28 @@ class CourtSkirt(pygame.sprite.Sprite):
 
     def update(self):
         self.surface.blit(self.image, self.rect)
+
+class DebugPanel(pygame.sprite.Sprite):
+    """A simple panel for debug information"""
+
+    def __init__(self, show_debug):
+        pygame.sprite.Sprite.__init__(self)
+        self.show_debug = show_debug
+        self.surface = pygame.display.get_surface()
+        self.debug_font = pygame.font.Font(BUNDLED_FONT, 14)
+        self.image = self.debug_font.render("FPS: 32", True, red)
+        self.rect = self.image.get_rect(center=self.surface.get_rect().center)
+
+    def update(self, debug_str):
+        """Update the debug panel with new information. You must pre-format
+the debug string yourself. New lines are not acceptable!
+
+* ``debug_str`` - The string to print in the debug panel
+
+        """
+        if self.show_debug:
+            self.image = self.debug_font.render(debug_str, True, red)
+            self.rect = self.image.get_rect(x=5, y=self.surface.get_rect().height - 44)
+            self.surface.blit(self.image, self.rect)
+        else:
+            return

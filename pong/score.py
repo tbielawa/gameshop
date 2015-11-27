@@ -69,9 +69,10 @@ show_splash = True
 if '-q' in sys.argv or '--quick' in sys.argv:
     show_splash = False
 
+show_debug = False
 # D for debug
 if '-d' in sys.argv or '--debug' in sys.argv:
-    show_fps = True
+    show_debug = True
     log.setLevel(logging.DEBUG)
     log_stream_handler.setLevel(logging.DEBUG)
 
@@ -100,16 +101,14 @@ paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list, screen))
 def new_ball():
     angle = float(random.randrange(0, 359))
     logging.getLogger('pong').debug("Projectile angle: %s" % angle)
-    # return pong.PongBall(wall_list, paddles, angle=angle)
     return pong.PongBall(wall_list, paddles, velocity=15, angle=angle)
 
 ######################################################################
 # Fonts
 pygame.font.init()
 
-# score_font = pygame.font.SysFont(pong.SCORE_FONT, 64)
 score_font = pygame.font.Font(pong.BUNDLED_FONT, 64)
-# A test string so we can get some data positioning for later
+# A test string ("10") so we can get some data positioning for later
 score_size = score_font.render("10", True, pong.white).get_size()
 score_width = score_size[0]
 score_height = score_size[1]
@@ -136,6 +135,7 @@ ball = new_ball()
 game_start_time = time.time()
 splash_screen = pong.AnnoyingSplashScreen()
 court_skirt = pong.CourtSkirt()
+debug_panel = pong.DebugPanel(show_debug)
 
 while 1:
     ######################################################################
@@ -184,6 +184,8 @@ while 1:
     paddles.update()
     court_skirt.update()
     dividing_line.update()
+    debug_str = "FPS: %s; Ball Theta: %s" % (int(clock.get_fps()), int(ball.angle))
+    debug_panel.update(debug_str)
 
     ######################################################################
 
