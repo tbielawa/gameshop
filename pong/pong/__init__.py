@@ -108,7 +108,7 @@ Return data:
 class PongPaddleLeft(PongPaddle):
     pos = (78, 360)
     up = pygame.K_w
-    down =  pygame.K_s
+    down = pygame.K_s
 
 
 class PongPaddleRight(PongPaddle):
@@ -202,11 +202,14 @@ background.
         _score = self.score_font.render(score_digitize(self.score), True, white)
         self.surface.blit(_score, self.rect)
 
+
 class PongScoreLeft(PongScore):
     pos = (282, 44)
 
+
 class PongScoreRight(PongScore):
     pos = (922, 44)
+
 
 class AnnoyingSplashScreen(pygame.sprite.Sprite):
     """A classic annoying splash screen you are unable to bypass"""
