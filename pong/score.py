@@ -43,10 +43,10 @@ court_rect = pygame.Rect(78, 44, court_width, court_height)
 
 ######################################################################
 log = logging.getLogger("pong")
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 log_stream_handler = logging.StreamHandler()
 log_stream_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s  - %(message)s"))
-log_stream_handler.setLevel(logging.DEBUG)
+log_stream_handler.setLevel(logging.INFO)
 log.addHandler(log_stream_handler)
 log.info("Logging initialized")
 
@@ -68,6 +68,12 @@ if '-f' in sys.argv or '--fullscreen' in sys.argv:
 show_splash = True
 if '-q' in sys.argv or '--quick' in sys.argv:
     show_splash = False
+
+# D for debug
+if '-d' in sys.argv or '--debug' in sys.argv:
+    show_fps = True
+    log.setLevel(logging.DEBUG)
+    log_stream_handler.setLevel(logging.DEBUG)
 
 screen_rect = screen.get_rect()
 
@@ -124,22 +130,17 @@ score_region_r = pygame.Rect((screen_rect.width * .75 - score_width * .5,
                              score_width,
                              score_height))
 
-
 LEFT_SCORE = 0
 RIGHT_SCORE = 0
-
 ball = new_ball()
-
 game_start_time = time.time()
-
 splash_screen = pong.AnnoyingSplashScreen()
-
 court_skirt = pong.CourtSkirt()
 
 while 1:
     ######################################################################
     # Basic handlers and static assets
-    clock.tick(30)
+    clock.tick(45)
     # How long since we started the game (in seconds)
     if show_splash:
         dt = time.time() - game_start_time
@@ -153,7 +154,7 @@ while 1:
             sys.exit()
     kb_input = pygame.key.get_pressed()
 
-    if kb_input[pygame.K_ESCAPE] == 1 or kb_input[pygame.K_q] == 1:
+    if kb_input[pygame.K_ESCAPE] == 1:
         sys.exit()
 
     if kb_input[pygame.K_f] == 1:
@@ -168,9 +169,6 @@ while 1:
 
     # Create a surface (score) to blit onto the screen
     if dt <= 4:
-        # banner = score_font.render("TBLABLABONG", True, pong.white)
-        # banner_rect = banner.get_rect(center=screen_rect.center)
-        # screen.blit(banner, banner_rect)
         splash_screen.update()
         pygame.display.flip()
         # Press any key to skip the intro
@@ -183,7 +181,6 @@ while 1:
         score_surface_r = score_font.render(right_score, True, pong.white)
         screen.blit(score_surface_r, score_region_r)
 
-    # pygame.draw.rect(screen, pong.white, dividing_line)
     paddles.update()
     court_skirt.update()
     dividing_line.update()
@@ -204,6 +201,5 @@ while 1:
         # And the left wall is a point for the right player
         ball = new_ball()
         RIGHT_SCORE += 1
-
 
     pygame.display.flip()

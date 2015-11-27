@@ -222,23 +222,31 @@ class AnnoyingSplashScreen(pygame.sprite.Sprite):
     """A classic annoying splash screen you are unable to bypass"""
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self.surface = pygame.display.get_surface()
 
         splash_font = pygame.font.Font(BUNDLED_FONT, 64)
         instruct_font = pygame.font.Font(BUNDLED_FONT, 24)
+        skip_font = pygame.font.Font(BUNDLED_FONT, 18)
 
         # Title
         self.banner = splash_font.render("TBLABLABONG", True, white)
-        self.banner_rect = self.banner.get_rect(center=pygame.display.get_surface().get_rect().center)
+        self.banner_rect = self.banner.get_rect(center=self.surface.get_rect().center)
 
         # Instructions
-        self.instructions = instruct_font.render("[w] up;  [s] down;  [f]  full screen;  [q] quit", True, white)
+        self.instructions = instruct_font.render("[w] up;  [s] down;  [f]  full screen;  [esc] quit", True, white)
         instructions_midtop = self.banner_rect.midbottom
         self.instructions_rect = self.instructions.get_rect(midtop=(instructions_midtop[0], instructions_midtop[1] + 24))
 
+        # Skip msg
+        self.skip_msg = skip_font.render("press a key at any time to skip this screen", True, white)
+        screen_midbottom = self.surface.get_rect().midbottom
+        self.skip_rect = self.skip_msg.get_rect(midbottom=screen_midbottom)
+        self.skip_rect.move_ip(0, -self.skip_rect.height)
+
     def update(self):
-        surface = pygame.display.get_surface()
-        surface.blit(self.banner, self.banner_rect)
-        surface.blit(self.instructions, self.instructions_rect)
+        self.surface.blit(self.banner, self.banner_rect)
+        self.surface.blit(self.instructions, self.instructions_rect)
+        self.surface.blit(self.skip_msg, self.skip_rect)
 
 
 class CourtDividingLine(pygame.sprite.Sprite):
