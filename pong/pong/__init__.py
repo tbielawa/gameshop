@@ -41,13 +41,12 @@ class PongPaddle(pygame.sprite.Sprite):
     WIDTH = 16
     # White
     COLOR = (255, 255, 255)
-    # red
-    # COLOR = (255, 0, 0)
     VELOCITY = 15
 
-    # Constructor. Pass in the color of the block,
-    # and its x and y position
-    def __init__(self, side, walls, surface):
+    MIN_Y = 44
+    MAX_Y = 676
+
+    def __init__(self, side, walls):
         """Initialize a pong paddle. The ``side`` parameter is one of
 ``PADDLE_LEFT`` or ``PADDLE_RIGHT``
         """
@@ -55,12 +54,7 @@ class PongPaddle(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.log = logging.getLogger('pong')
 
-        self.surface = surface
-
-        # Create an image of the block, and fill it with a color.
-        # This could also be an image loaded from the disk.
-        # self.image = pygame.Surface([self.WIDTH, self.HEIGHT])
-        # self.image.fill(self.COLOR)
+        self.surface = pygame.display.get_surface()
         self.image = pygame.image.load('assets/paddle.png')
 
         # Store our bounding walls and our paddle side
@@ -111,7 +105,7 @@ Return data:
         # hitting the top floor. Then our rect.top (coordinate?) will
         # intersect with self.walls[0]
         #
-        # hitting the bottom floor. Then out rect.bottom (coordinate?)
+        # hitting the bottom floor. Then our rect.bottom (coordinate?)
         # will intersect with self.walls[2]
         next_pos = self.rect.move(0, dy)
         hit_point = next_pos.collidelist(self.walls)
@@ -195,7 +189,6 @@ class PongBall(pygame.sprite.Sprite):
         self.angle = math.degrees(math.atan2(next_y, next_x))
         self.rect.move_ip(next_x, next_y)
         self.surface.blit(self.image, self.rect)
-        # pygame.draw.rect(self.surface, self.color, self.rect)
         return False
 
 

@@ -94,8 +94,8 @@ v_walls = pygame.sprite.Group()
 ######################################################################
 # The pong ball
 paddles = pygame.sprite.Group()
-paddles.add(pong.PongPaddle(pong.PADDLE_LEFT, wall_list, screen))
-paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list, screen))
+paddles.add(pong.PongPaddle(pong.PADDLE_LEFT, wall_list))
+paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list))
 
 
 def new_ball():
