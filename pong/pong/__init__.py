@@ -8,6 +8,7 @@ import pygame.sprite
 PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
 BUNDLED_FONT = "assets/ArcadeClassic.ttf"
+pygame.font.init()
 
 ######################################################################
 black = (000, 000, 000)
@@ -209,10 +210,30 @@ The Group.clear - draw a background over the Sprites method requires
 these same attributes, and can be used to erase all the Sprites with
 background.
     """
-    def __init__(self, x, y):
+    def __init__(self, side):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
+        self.surface = pygame.display.get_surface()
+
+        if side == 'left':
+            self.pos = (282, 44)
+        elif side == 'right':
+            self.pos = (922, 44)
+        else:
+            raise SystemExit("Illegal value given to PongScore 'side' paramater: %s; Must be 'left' or 'right'" % side)
+
         self.score = 0
+        self.score_font = pygame.font.Font(BUNDLED_FONT, 64)
+        self.image = self.score_font.render(score_digitize(self.score), True, white)
+        self.rect = self.image.get_rect(topleft=self.pos)
+
+    def scored(self):
+        """Increment the score for this side"""
+        self.score += 1
+
+    def update(self):
+        _score = self.score_font.render(score_digitize(self.score), True, white)
+        self.surface.blit(_score, self.rect)
 
 
 class AnnoyingSplashScreen(pygame.sprite.Sprite):
@@ -287,6 +308,9 @@ class DebugPanel(pygame.sprite.Sprite):
         self.debug_font = pygame.font.Font(BUNDLED_FONT, 14)
         self.image = self.debug_font.render("FPS: 32", True, red)
         self.rect = self.image.get_rect(center=self.surface.get_rect().center)
+
+    def toggle_visible(self):
+        self.show_debug = not self.show_debug
 
     def update(self, debug_str):
         """Update the debug panel with new information. You must pre-format

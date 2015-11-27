@@ -61,9 +61,9 @@ icon = pygame.image.load(DISPLAY_ICON)
 pygame.display.set_icon(icon)
 pygame.display.set_caption("TBLABLABONG")
 clock = pygame.time.Clock()
+
 if '-f' in sys.argv or '--fullscreen' in sys.argv:
     pygame.display.toggle_fullscreen()
-    pygame.mouse.set_visible(False)
 
 show_splash = True
 if '-q' in sys.argv or '--quick' in sys.argv:
@@ -100,18 +100,10 @@ paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list, screen))
 
 def new_ball():
     angle = float(random.randrange(0, 359))
+    angle = 25
     logging.getLogger('pong').debug("Projectile angle: %s" % angle)
     return pong.PongBall(wall_list, paddles, velocity=15, angle=angle)
 
-######################################################################
-# Fonts
-pygame.font.init()
-
-score_font = pygame.font.Font(pong.BUNDLED_FONT, 64)
-# A test string ("10") so we can get some data positioning for later
-score_size = score_font.render("10", True, pong.white).get_size()
-score_width = score_size[0]
-score_height = score_size[1]
 ######################################################################
 
 s_rect_w = screen_rect.width
@@ -120,22 +112,15 @@ s_rect_h = screen_rect.height
 score_width = 76
 
 dividing_line = pong.CourtDividingLine()
-score_region_l = pygame.Rect((screen_rect.width * .25) - score_width * .5,
-                             44,
-                             score_width,
-                             score_height)
-score_region_r = pygame.Rect((screen_rect.width * .75 - score_width * .5,
-                             44,
-                             score_width,
-                             score_height))
 
-LEFT_SCORE = 0
-RIGHT_SCORE = 0
 ball = new_ball()
 game_start_time = time.time()
 splash_screen = pong.AnnoyingSplashScreen()
 court_skirt = pong.CourtSkirt()
 debug_panel = pong.DebugPanel(show_debug)
+
+left_score = pong.PongScore('left')
+right_score = pong.PongScore('right')
 
 while 1:
     ######################################################################
@@ -164,8 +149,6 @@ while 1:
     screen.fill(pong.black)
 
     ######################################################################
-    left_score = pong.score_digitize(LEFT_SCORE)
-    right_score = pong.score_digitize(RIGHT_SCORE)
 
     # Create a surface (score) to blit onto the screen
     if dt <= 4:
@@ -175,12 +158,9 @@ while 1:
         if 1 in kb_input:
             show_splash = False
         continue
-    else:
-        score_surface_l = score_font.render(left_score, True, pong.white)
-        screen.blit(score_surface_l, score_region_l)
-        score_surface_r = score_font.render(right_score, True, pong.white)
-        screen.blit(score_surface_r, score_region_r)
 
+    left_score.update()
+    right_score.update()
     paddles.update()
     court_skirt.update()
     dividing_line.update()
@@ -196,12 +176,12 @@ while 1:
     elif ball_play == 1:
         log.debug("hit right: %s" % ball_play)
         # Hitting the right wall is a point for the left player
-        LEFT_SCORE += 1
+        left_score.scored()
         ball = new_ball()
     elif ball_play == 3:
         log.debug("hit left")
         # And the left wall is a point for the right player
+        right_score.scored()
         ball = new_ball()
-        RIGHT_SCORE += 1
 
     pygame.display.flip()
