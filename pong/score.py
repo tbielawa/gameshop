@@ -100,19 +100,12 @@ paddles.add(pong.PongPaddleRight(wall_list))
 
 def new_ball():
     angle = float(random.randrange(0, 359))
-    angle = 25
+    # angle = 25
     logging.getLogger('pong').debug("Projectile angle: %s" % angle)
     return pong.PongBall(wall_list, paddles, velocity=15, angle=angle)
 
 ######################################################################
-
-s_rect_w = screen_rect.width
-s_rect_h = screen_rect.height
-
-score_width = 76
-
 dividing_line = pong.CourtDividingLine()
-
 ball = new_ball()
 game_start_time = time.time()
 splash_screen = pong.AnnoyingSplashScreen()

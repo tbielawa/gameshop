@@ -160,7 +160,6 @@ class PongBall(pygame.sprite.Sprite):
             #
             # Is it vertical (a wall?), or horizontal (a floor/ceil)?
             if is_wall(self.walls[boundary]):
-                # next_x = -1 * (self.velocity * math.cos(math.radians(self.angle)))
                 self.log.debug("boundary: {}".format(boundary))
                 return boundary
             else:
@@ -249,8 +248,6 @@ class CourtDividingLine(pygame.sprite.Sprite):
         self.log = logging.getLogger('pong')
         self.surface = pygame.display.get_surface()
         self.surface_rect = self.surface.get_rect()
-        # self.image = pygame.surface.Surface([6, self.surface_rect.height])
-        # self.image.fill(white)
         self.image = pygame.image.load('assets/dividing_line.png')
         self.rect = self.image.get_rect(center=self.surface_rect.center)
         self.top = self.rect.top
