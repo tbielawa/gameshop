@@ -37,11 +37,13 @@ def score_digitize(score):
 
 ######################################################################
 class PongPaddle(pygame.sprite.Sprite):
-    VELOCITY = 15
+    velocity = 15
+    pos = (0, 0)
+    up = None
+    down = None
 
-    def __init__(self, side, walls):
-        """Initialize a pong paddle. The ``side`` parameter is one of
-``PADDLE_LEFT`` or ``PADDLE_RIGHT``
+    def __init__(self, walls):
+        """Initialize a pong paddle. Don't forget the walls
         """
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
@@ -50,24 +52,10 @@ class PongPaddle(pygame.sprite.Sprite):
         self.surface = pygame.display.get_surface()
         self.image = pygame.image.load('assets/paddle.png')
 
-        # Store our bounding walls and our paddle side
-        self.side = side
         self.walls = walls
 
-        # Paddles are left/right specific. Each paddle responds to a
-        # different set of keyboard input codes.
-        if self.side == PADDLE_LEFT:
-            self.up = pygame.K_w
-            self.down = pygame.K_s
-        elif self.side == PADDLE_RIGHT:
-            self.up = pygame.K_UP
-            self.down = pygame.K_DOWN
-
         # Initial position setting
-        if self.side == PADDLE_LEFT:
-            self.rect = self.image.get_rect(center=(78, 360))
-        elif self.side == PADDLE_RIGHT:
-            self.rect = self.image.get_rect(center=(1202, 360))
+        self.rect = self.image.get_rect(center=self.pos)
 
     def hit_border(self, dy):
         """Calculate using our dy (change in up/down) if we hit a
@@ -108,16 +96,27 @@ Return data:
         kb_input = pygame.key.get_pressed()
         dy = 0
         if kb_input[self.up] == 1:
-            dy = -self.VELOCITY
+            dy = -self.velocity
         elif kb_input[self.down] == 1:
-            dy = self.VELOCITY
+            dy = self.velocity
 
         if not self.hit_border(dy):
             self.rect.move_ip(0, dy)
         else:
             pass
-
         self.surface.blit(self.image, self.rect)
+
+
+class PongPaddleLeft(PongPaddle):
+    pos = (78, 360)
+    up = pygame.K_w
+    down =  pygame.K_s
+
+
+class PongPaddleRight(PongPaddle):
+    pos = (1202, 360)
+    up = pygame.K_UP
+    down = pygame.K_DOWN
 
 
 ######################################################################
@@ -186,18 +185,12 @@ The Group.clear - draw a background over the Sprites method requires
 these same attributes, and can be used to erase all the Sprites with
 background.
     """
-    def __init__(self, side):
+    pos = (0, 0)
+
+    def __init__(self):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         self.surface = pygame.display.get_surface()
-
-        if side == 'left':
-            self.pos = (282, 44)
-        elif side == 'right':
-            self.pos = (922, 44)
-        else:
-            raise SystemExit("Illegal value given to PongScore 'side' paramater: %s; Must be 'left' or 'right'" % side)
-
         self.score = 0
         self.score_font = pygame.font.Font(BUNDLED_FONT, 64)
         self.image = self.score_font.render(score_digitize(self.score), True, white)
@@ -211,6 +204,11 @@ background.
         _score = self.score_font.render(score_digitize(self.score), True, white)
         self.surface.blit(_score, self.rect)
 
+class PongScoreLeft(PongScore):
+    pos = (282, 44)
+
+class PongScoreRight(PongScore):
+    pos = (922, 44)
 
 class AnnoyingSplashScreen(pygame.sprite.Sprite):
     """A classic annoying splash screen you are unable to bypass"""

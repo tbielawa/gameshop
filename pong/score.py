@@ -94,8 +94,8 @@ v_walls = pygame.sprite.Group()
 ######################################################################
 # The pong ball
 paddles = pygame.sprite.Group()
-paddles.add(pong.PongPaddle(pong.PADDLE_LEFT, wall_list))
-paddles.add(pong.PongPaddle(pong.PADDLE_RIGHT, wall_list))
+paddles.add(pong.PongPaddleLeft(wall_list))
+paddles.add(pong.PongPaddleRight(wall_list))
 
 
 def new_ball():
@@ -119,8 +119,8 @@ splash_screen = pong.AnnoyingSplashScreen()
 court_skirt = pong.CourtSkirt()
 debug_panel = pong.DebugPanel(show_debug)
 
-left_score = pong.PongScore('left')
-right_score = pong.PongScore('right')
+left_score = pong.PongScoreLeft()
+right_score = pong.PongScoreRight()
 
 while 1:
     ######################################################################
