@@ -298,6 +298,7 @@ class CourtSkirt(pygame.sprite.Sprite):
     def update(self):
         self.surface.blit(self.image, self.rect)
 
+
 class DebugPanel(pygame.sprite.Sprite):
     """A simple panel for debug information"""
 
@@ -308,9 +309,6 @@ class DebugPanel(pygame.sprite.Sprite):
         self.debug_font = pygame.font.Font(BUNDLED_FONT, 14)
         self.image = self.debug_font.render("FPS: 32", True, red)
         self.rect = self.image.get_rect(center=self.surface.get_rect().center)
-
-    def toggle_visible(self):
-        self.show_debug = not self.show_debug
 
     def update(self, debug_str):
         """Update the debug panel with new information. You must pre-format
