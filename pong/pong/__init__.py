@@ -5,8 +5,6 @@ import pygame.font
 import pygame.rect
 import pygame.sprite
 
-PADDLE_LEFT = -1
-PADDLE_RIGHT = 1
 BUNDLED_FONT = "assets/ArcadeClassic.ttf"
 pygame.font.init()
 
