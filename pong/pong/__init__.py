@@ -37,14 +37,7 @@ def score_digitize(score):
 
 ######################################################################
 class PongPaddle(pygame.sprite.Sprite):
-    HEIGHT = 64
-    WIDTH = 16
-    # White
-    COLOR = (255, 255, 255)
     VELOCITY = 15
-
-    MIN_Y = 44
-    MAX_Y = 676
 
     def __init__(self, side, walls):
         """Initialize a pong paddle. The ``side`` parameter is one of
@@ -70,21 +63,11 @@ class PongPaddle(pygame.sprite.Sprite):
             self.up = pygame.K_UP
             self.down = pygame.K_DOWN
 
-        # Fetch the rectangle object that has the dimensions of the image
-        # Update the position of this object by setting the values of rect.x and rect.y
-        self.rect = self.image.get_rect()
-        self._init_pos()
-
-    def _init_pos(self):
-        ######################################################################
-        # Calculate initial positions for the paddles. Each init pos
-        # is based off of the closest wall (vertical boundary rect)
+        # Initial position setting
         if self.side == PADDLE_LEFT:
-            self.rect.center = self.walls[3].midright
-            self.rect.move_ip(8 * 5, 0)
+            self.rect = self.image.get_rect(center=(78, 360))
         elif self.side == PADDLE_RIGHT:
-            self.rect.center = self.walls[1].midleft
-            self.rect.move_ip(-8 * 5, 0)
+            self.rect = self.image.get_rect(center=(1202, 360))
 
     def hit_border(self, dy):
         """Calculate using our dy (change in up/down) if we hit a
