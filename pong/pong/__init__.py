@@ -24,12 +24,6 @@ blue = (0, 0, 255)
 ######################################################################
 
 
-# Is this a wall?
-def is_wall(rect):
-    # Is the height greater than the width?
-    return rect.h > rect.w
-
-
 def score_digitize(score):
     # Returns a left-padded string if the score is only a single digit
     if len(str(score)) == 1:
@@ -45,7 +39,7 @@ class PongPaddle(pygame.sprite.Sprite):
     up = None
     down = None
 
-    def __init__(self, walls):
+    def __init__(self, h_walls=None):
         """Initialize a pong paddle. Don't forget the walls
         """
         # Call the parent class (Sprite) constructor
@@ -55,7 +49,7 @@ class PongPaddle(pygame.sprite.Sprite):
         self.surface = pygame.display.get_surface()
         self.image = pygame.image.load('assets/paddle.png')
 
-        self.walls = walls
+        self.h_walls = h_walls
 
         # Initial position setting
         self.rect = self.image.get_rect(center=self.pos)
@@ -72,23 +66,19 @@ Return data:
 * ``True`` if we need to shut this shit down (we hit something)
 * ``False`` if we may continue moving
         """
-        # Just how far up and down we do want to allow the paddle to
-        # go? I suppose we'd want to allow up to the bottom edge of
-        # the top floor and the top edge of the bottom floor.
-
-        # hitting the top floor. Then our rect.top (coordinate?) will
-        # intersect with self.walls[0]
-        #
-        # hitting the bottom floor. Then our rect.bottom (coordinate?)
-        # will intersect with self.walls[2]
-        next_pos = self.rect.move(0, dy)
-        hit_point = next_pos.collidelist(self.walls)
-
-        # OK. We know if this was a floor/ceiling:
-        # 0 and 2 are the top border and bottom border
-        if hit_point in [WALL_TOP, WALL_BOTTOM]:
+        # Remember the current position
+        initial_pos = self.rect.copy()
+        # Temporarily move us to the next position
+        self.rect.move_ip(0, dy)
+        # Check if we would hit anything once moved
+        h_collide = pygame.sprite.spritecollide(self, self.h_walls, False)
+        # Reset our position to the initial position
+        self.rect = initial_pos
+        # Return True if we would hit something, else: False
+        if h_collide:
             return True
-        return False
+        else:
+            return False
 
     def update(self):
         # Valid movement paths for paddles:
@@ -321,10 +311,11 @@ the debug string yourself. New lines are not acceptable!
         """
         if self.show_debug:
             self.image = self.debug_font.render(debug_str, True, red)
-            self.rect = self.image.get_rect(x=5, y=self.surface.get_rect().height - 44)
+            self.rect = self.image.get_rect(x=5, y=self.surface.get_rect().height - 30)
             self.surface.blit(self.image, self.rect)
         else:
             return
+
 
 class Wall(pygame.sprite.Sprite):
     """Just a ball to bounce off of, or to score on"""

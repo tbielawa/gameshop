@@ -69,6 +69,9 @@ if '-d' in sys.argv or '--debug' in sys.argv:
     log.setLevel(logging.DEBUG)
     log_stream_handler.setLevel(logging.DEBUG)
 
+    court_visual = pygame.Rect(78, 44, 1124, 632)
+
+
 screen_rect = screen.get_rect()
 
 ######################################################################
@@ -81,18 +84,17 @@ screen_left = pygame.Rect(0, 0, 1, screen_h)
 
 wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 
-h_walls = pygame.sprite.Group(pong.Wall(screen_left, pong.WALL_LEFT), pong.Wall(screen_right, pong.WALL_RIGHT))
-v_walls = pygame.sprite.Group(pong.Wall(screen_top, pong.WALL_TOP), pong.Wall(screen_bottom, pong.WALL_BOTTOM))
+v_walls = pygame.sprite.Group(pong.Wall(screen_left, pong.WALL_LEFT), pong.Wall(screen_right, pong.WALL_RIGHT))
+h_walls = pygame.sprite.Group(pong.Wall(screen_top, pong.WALL_TOP), pong.Wall(screen_bottom, pong.WALL_BOTTOM))
 
 ######################################################################
 # XXX: Future - use
 paddles = pygame.sprite.Group()
-paddles.add(pong.PongPaddleLeft(wall_list))
-paddles.add(pong.PongPaddleRight(wall_list))
+paddles.add(pong.PongPaddleLeft(h_walls=h_walls))
+paddles.add(pong.PongPaddleRight(h_walls=h_walls))
 
 ######################################################################
 # The pong ball initializer
-
 def new_ball():
     angle = float(random.randrange(0, 359))
     # angle = 25
@@ -135,6 +137,9 @@ while 1:
 
     # This clears out the trails left by moving objects
     screen.fill(pong.black)
+
+    if show_debug:
+        pygame.draw.rect(screen, (000, 175, 000), court_visual, 2)
 
     ######################################################################
 
