@@ -109,7 +109,7 @@ def new_ball():
     #angle = 33
     # 53 = 7x bounce sequence
     #angle = 53
-    logging.getLogger('pong').debug("Projectile angle: %s" % angle)
+    logging.getLogger('pong').info("New ball angle: %s" % angle)
     return pong.PongBall(paddles, velocity=15, angle=angle, h_walls=h_walls, v_walls=v_walls, court_skirt=court_skirt)
 
 ball = new_ball()
@@ -158,7 +158,7 @@ while 1:
     paddles.update()
     court_skirt.update()
     dividing_line.update()
-    debug_str = "FPS: %s; Ball Theta: %s" % (int(clock.get_fps()), int(ball.angle))
+    debug_str = "FPS: %s; Ball Theta: %s" % (round(clock.get_fps(), 2), int(ball.angle))
     debug_panel.update(debug_str)
 
     ######################################################################
@@ -168,12 +168,12 @@ while 1:
     if not ball_play:
         pass
     elif ball_play == pong.WALL_RIGHT:
-        log.debug("hit right wall")
+        log.info("hit right wall")
         # Hitting the right wall is a point for the left player
         left_score.scored()
         ball = new_ball()
     elif ball_play == pong.WALL_LEFT:
-        log.debug("hit left wall")
+        log.info("hit left wall")
         # And the left wall is a point for the right player
         right_score.scored()
         ball = new_ball()
