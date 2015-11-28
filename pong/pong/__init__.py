@@ -114,12 +114,13 @@ class PongPaddleRight(PongPaddle):
 
 ######################################################################
 class PongBall(pygame.sprite.Sprite):
-    def __init__(self, paddles=None, velocity=10, angle=0.0, h_walls=None, v_walls=None):
+    def __init__(self, paddles=None, velocity=10, angle=0.0, h_walls=None, v_walls=None, court_skirt=None):
         self.log = logging.getLogger('pong')
         self.surface = pygame.display.get_surface()
         self.surface_rect = self.surface.get_rect()
         self.h_walls = h_walls
         self.v_walls = v_walls
+        self.court_skirt = court_skirt
         self.paddles = paddles
         self.velocity = velocity
         self.angle = angle
@@ -129,9 +130,18 @@ class PongBall(pygame.sprite.Sprite):
         self.image = pygame.image.load('assets/ball.png')
 
     def hit_paddle(self):
-        for paddle in self.paddles.sprites():
-            if paddle.rect.colliderect(self.rect):
-                return paddle
+        """Accounts for when the ball is in the court skirt. This allows it to
+auto-bypass the region of paddle which is masked by the court skirt
+        """
+        if self.court_skirt.rect.contains(self.rect):
+            self.log.debug("Ball in court skirt: bypassing any interfering paddles")
+            return False
+        else:
+            # Not in the skirt, did we hit any paddles?
+            for paddle in self.paddles.sprites():
+                if paddle.rect.colliderect(self.rect):
+                    return paddle
+        # Otherwise we just moved on
         return False
 
     def hit_boundary(self):
@@ -178,7 +188,6 @@ collisions. Returns:
         elif boundary is not None:
             # Left or right wall = A PLAYER HAS SCORED
             if boundary in [WALL_LEFT, WALL_RIGHT]:
-                self.log.debug("wall: {}".format(boundary))
                 return boundary
             # Not a score zone, just a reflection about the x axis to
             # flip the y component trajectory

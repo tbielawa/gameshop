@@ -92,26 +92,29 @@ paddles.add(pong.PongPaddleLeft(h_walls=h_walls))
 paddles.add(pong.PongPaddleRight(h_walls=h_walls))
 
 ######################################################################
-# The pong ball initializer
-def new_ball():
-    angle = float(random.randrange(0, 359))
-    # angle = 25
-    logging.getLogger('pong').debug("Projectile angle: %s" % angle)
-    return pong.PongBall(paddles, velocity=15, angle=angle, h_walls=h_walls, v_walls=v_walls)
-
-######################################################################
 dividing_line = pong.CourtDividingLine()
-ball = new_ball()
+
 game_start_time = time.time()
 splash_screen = pong.AnnoyingSplashScreen()
 court_skirt = pong.CourtSkirt()
 debug_panel = pong.DebugPanel(show_debug)
-
 left_score = pong.PongScoreLeft()
 right_score = pong.PongScoreRight()
 
+######################################################################
+# The pong ball initializer
+def new_ball():
+    angle = float(random.randrange(0, 359))
+    # 33 = always through the skirt under the right paddle
+    #angle = 33
+    # 53 = 7x bounce sequence
+    #angle = 53
+    logging.getLogger('pong').debug("Projectile angle: %s" % angle)
+    return pong.PongBall(paddles, velocity=15, angle=angle, h_walls=h_walls, v_walls=v_walls, court_skirt=court_skirt)
+
+ball = new_ball()
+######################################################################
 while 1:
-    ######################################################################
     # Basic handlers and static assets
     clock.tick(45)
     # How long since we started the game (in seconds)
@@ -165,12 +168,12 @@ while 1:
     if not ball_play:
         pass
     elif ball_play == pong.WALL_RIGHT:
-        log.debug("hit right: %s" % ball_play)
+        log.debug("hit right wall")
         # Hitting the right wall is a point for the left player
         left_score.scored()
         ball = new_ball()
     elif ball_play == pong.WALL_LEFT:
-        log.debug("hit left")
+        log.debug("hit left wall")
         # And the left wall is a point for the right player
         right_score.scored()
         ball = new_ball()
