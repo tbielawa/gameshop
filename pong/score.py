@@ -81,21 +81,23 @@ screen_left = pygame.Rect(0, 0, 1, screen_h)
 
 wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 
-h_walls = pygame.sprite.Group()
-v_walls = pygame.sprite.Group()
+h_walls = pygame.sprite.Group(pong.Wall(screen_left), pong.Wall(screen_right))
+v_walls = pygame.sprite.Group(pong.Wall(screen_top), pong.Wall(screen_bottom))
 
 ######################################################################
-# The pong ball
+# XXX: Future - use
 paddles = pygame.sprite.Group()
 paddles.add(pong.PongPaddleLeft(wall_list))
 paddles.add(pong.PongPaddleRight(wall_list))
 
+######################################################################
+# The pong ball initializer
 
 def new_ball():
     angle = float(random.randrange(0, 359))
     # angle = 25
     logging.getLogger('pong').debug("Projectile angle: %s" % angle)
-    return pong.PongBall(wall_list, paddles, velocity=15, angle=angle)
+    return pong.PongBall(wall_list, paddles, velocity=15, angle=angle, h_walls=h_walls, v_walls=v_walls)
 
 ######################################################################
 dividing_line = pong.CourtDividingLine()
@@ -159,12 +161,12 @@ while 1:
     # 1 and 3 are the indicie of the right and left walls
     if not ball_play:
         pass
-    elif ball_play == 1:
+    elif ball_play == pong.WALL_RIGHT:
         log.debug("hit right: %s" % ball_play)
         # Hitting the right wall is a point for the left player
         left_score.scored()
         ball = new_ball()
-    elif ball_play == 3:
+    elif ball_play == pong.WALL_LEFT:
         log.debug("hit left")
         # And the left wall is a point for the right player
         right_score.scored()

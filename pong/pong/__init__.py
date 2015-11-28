@@ -8,6 +8,11 @@ import pygame.sprite
 BUNDLED_FONT = "assets/ArcadeClassic.ttf"
 pygame.font.init()
 
+WALL_TOP = 0
+WALL_RIGHT = 1
+WALL_BOTTOM = 2
+WALL_LEFT = 3
+
 ######################################################################
 black = (000, 000, 000)
 white = (255, 255, 255)
@@ -35,7 +40,7 @@ def score_digitize(score):
 
 ######################################################################
 class PongPaddle(pygame.sprite.Sprite):
-    velocity = 20
+    velocity = 15
     pos = (0, 0)
     up = None
     down = None
@@ -81,7 +86,7 @@ Return data:
 
         # OK. We know if this was a floor/ceiling:
         # 0 and 2 are the top border and bottom border
-        if hit_point in [0, 2]:
+        if hit_point in [WALL_TOP, WALL_BOTTOM]:
             return True
         return False
 
@@ -119,11 +124,13 @@ class PongPaddleRight(PongPaddle):
 
 ######################################################################
 class PongBall(pygame.sprite.Sprite):
-    def __init__(self, walls, paddles, velocity=10, angle=0.0):
+    def __init__(self, walls=[], paddles=None, velocity=10, angle=0.0, h_walls=None, v_walls=None):
         self.log = logging.getLogger('pong')
         self.surface = pygame.display.get_surface()
         self.surface_rect = self.surface.get_rect()
         self.walls = walls
+        self.h_walls = h_walls
+        self.v_walls = v_walls
         self.paddles = paddles
         self.velocity = velocity
         self.angle = angle
@@ -139,11 +146,20 @@ class PongBall(pygame.sprite.Sprite):
         return False
 
     def hit_boundary(self):
-        # Check if the ball has struck a boundary
+        """Check if the ball has struck a boundary. Returns:
+
+* `None` - if no wall was hit
+
+* impact - int - the index of the wall which was struck in the list of
+  walls in `self.walls`
+        """
         impact = self.rect.collidelist(self.walls)
+        # we hit a thing. impact is the index of the thing we hit in
+        # our wall list
         if impact != -1:
             return impact
         else:
+            # None indicates we hit no boundary, 'impact' must be: 0..3
             return None
 
     def update(self):
@@ -156,6 +172,12 @@ class PongBall(pygame.sprite.Sprite):
             # Hit a paddle, it's a wall shape by design
             next_x = -1 * (self.velocity * math.cos(math.radians(self.angle)))
         elif boundary is not None:
+            # collide with h_walls (floor/ceil)?
+
+            # collide with v_walls (left/right scoring spots)?
+
+            # not hit anything
+
             # We hit a boundary, the boundary object is a Rect
             #
             # Is it vertical (a wall?), or horizontal (a floor/ceil)?
@@ -295,3 +317,16 @@ the debug string yourself. New lines are not acceptable!
             self.surface.blit(self.image, self.rect)
         else:
             return
+
+class Wall(pygame.sprite.Sprite):
+    """Just a ball to bounce off of, or to score on"""
+    def __init__(self, area):
+        # * `area` - A rect representing the area covered by this wall
+        pygame.sprite.Sprite.__init__(self)
+        self.surface = pygame.display.get_surface()
+
+        self.rect = area
+        self.image = pygame.Surface(self.rect.size)
+
+    def update(self):
+        pass
