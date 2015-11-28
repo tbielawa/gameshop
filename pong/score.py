@@ -81,8 +81,8 @@ screen_left = pygame.Rect(0, 0, 1, screen_h)
 
 wall_list = [screen_top, screen_right, screen_bottom, screen_left]
 
-h_walls = pygame.sprite.Group(pong.Wall(screen_left), pong.Wall(screen_right))
-v_walls = pygame.sprite.Group(pong.Wall(screen_top), pong.Wall(screen_bottom))
+h_walls = pygame.sprite.Group(pong.Wall(screen_left, pong.WALL_LEFT), pong.Wall(screen_right, pong.WALL_RIGHT))
+v_walls = pygame.sprite.Group(pong.Wall(screen_top, pong.WALL_TOP), pong.Wall(screen_bottom, pong.WALL_BOTTOM))
 
 ######################################################################
 # XXX: Future - use
@@ -97,7 +97,7 @@ def new_ball():
     angle = float(random.randrange(0, 359))
     # angle = 25
     logging.getLogger('pong').debug("Projectile angle: %s" % angle)
-    return pong.PongBall(wall_list, paddles, velocity=15, angle=angle, h_walls=h_walls, v_walls=v_walls)
+    return pong.PongBall(paddles, velocity=15, angle=angle, h_walls=h_walls, v_walls=v_walls)
 
 ######################################################################
 dividing_line = pong.CourtDividingLine()

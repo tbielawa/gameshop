@@ -124,11 +124,10 @@ class PongPaddleRight(PongPaddle):
 
 ######################################################################
 class PongBall(pygame.sprite.Sprite):
-    def __init__(self, walls=[], paddles=None, velocity=10, angle=0.0, h_walls=None, v_walls=None):
+    def __init__(self, paddles=None, velocity=10, angle=0.0, h_walls=None, v_walls=None):
         self.log = logging.getLogger('pong')
         self.surface = pygame.display.get_surface()
         self.surface_rect = self.surface.get_rect()
-        self.walls = walls
         self.h_walls = h_walls
         self.v_walls = v_walls
         self.paddles = paddles
@@ -149,41 +148,50 @@ class PongBall(pygame.sprite.Sprite):
         """Check if the ball has struck a boundary. Returns:
 
 * `None` - if no wall was hit
-
-* impact - int - the index of the wall which was struck in the list of
-  walls in `self.walls`
+* impact - int - a constant the ``pong`` module's
+  ``WALL_(TOP|BOTTOM|LEFT|RIGHT)`` list
         """
-        impact = self.rect.collidelist(self.walls)
-        # we hit a thing. impact is the index of the thing we hit in
-        # our wall list
-        if impact != -1:
-            return impact
+        # Was it a wall or ceiling?
+        h_collide = pygame.sprite.spritecollide(self, self.h_walls, False)
+
+        # Was it the left or right score zone?
+        v_collide = pygame.sprite.spritecollide(self, self.v_walls, False)
+
+        if h_collide:
+            return h_collide[0].wall_type
+        elif v_collide:
+            return v_collide[0].wall_type
         else:
-            # None indicates we hit no boundary, 'impact' must be: 0..3
             return None
 
     def update(self):
+        """Calculate the next ball position and account for wall/paddle
+collisions. Returns:
+
+ * `False` - When no other boundary or object was hit
+ * An int from the ``pong`` module's constants: ``WALL_(LEFT|RIGHT)``
+   indicating a score has landed and the side which was struck
+        """
         next_x = self.velocity * math.cos(math.radians(self.angle))
         next_y = self.velocity * math.sin(math.radians(self.angle))
         paddle = self.hit_paddle()
         boundary = self.hit_boundary()
 
+        # Our "collission free movement" case has been calculated in
+        # the block above. Now we need to see if we are hitting
+        # anything and how we need to adjust our path of movement
+
         if paddle:
-            # Hit a paddle, it's a wall shape by design
+            # TODO: Refactor to handle the ball impacting different
+            # positions on a paddle
             next_x = -1 * (self.velocity * math.cos(math.radians(self.angle)))
         elif boundary is not None:
-            # collide with h_walls (floor/ceil)?
-
-            # collide with v_walls (left/right scoring spots)?
-
-            # not hit anything
-
-            # We hit a boundary, the boundary object is a Rect
-            #
-            # Is it vertical (a wall?), or horizontal (a floor/ceil)?
-            if is_wall(self.walls[boundary]):
-                self.log.debug("boundary: {}".format(boundary))
+            # Left or right wall = A PLAYER HAS SCORED
+            if boundary in [WALL_LEFT, WALL_RIGHT]:
+                self.log.debug("wall: {}".format(boundary))
                 return boundary
+            # Not a score zone, just a reflection about the x axis to
+            # flip the y component trajectory
             else:
                 next_y = -1 * (self.velocity * math.sin(math.radians(self.angle)))
 
@@ -320,11 +328,12 @@ the debug string yourself. New lines are not acceptable!
 
 class Wall(pygame.sprite.Sprite):
     """Just a ball to bounce off of, or to score on"""
-    def __init__(self, area):
+    def __init__(self, area, wall_type):
         # * `area` - A rect representing the area covered by this wall
+        # * `wall_type` - a constant from the ``pong`` module in WALL_(LEFT|RIGHT|TOP|BOTTOM)
         pygame.sprite.Sprite.__init__(self)
         self.surface = pygame.display.get_surface()
-
+        self.wall_type = wall_type
         self.rect = area
         self.image = pygame.Surface(self.rect.size)
 
