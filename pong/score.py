@@ -82,8 +82,6 @@ screen_bottom = pygame.Rect(0, screen_h, screen_w, 1)
 screen_right = pygame.Rect(screen_w, 0, 1, screen_h)
 screen_left = pygame.Rect(0, 0, 1, screen_h)
 
-wall_list = [screen_top, screen_right, screen_bottom, screen_left]
-
 v_walls = pygame.sprite.Group(pong.Wall(screen_left, pong.WALL_LEFT), pong.Wall(screen_right, pong.WALL_RIGHT))
 h_walls = pygame.sprite.Group(pong.Wall(screen_top, pong.WALL_TOP), pong.Wall(screen_bottom, pong.WALL_BOTTOM))
 
