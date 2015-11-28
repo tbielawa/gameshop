@@ -35,7 +35,7 @@ def score_digitize(score):
 
 ######################################################################
 class PongPaddle(pygame.sprite.Sprite):
-    velocity = 15
+    velocity = 20
     pos = (0, 0)
     up = None
     down = None

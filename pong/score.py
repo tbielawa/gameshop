@@ -35,13 +35,6 @@ DISPLAY_ICON = "assets/icon.png"
 # http://www.pygame.org/docs/ref/font.html
 
 ######################################################################
-court_margin = 8
-court_width = 1124
-court_height = 632
-court_rect = pygame.Rect(78, 44, court_width, court_height)
-# We'll make the actual court_rect once we have a screen
-
-######################################################################
 log = logging.getLogger("pong")
 log.setLevel(logging.INFO)
 log_stream_handler = logging.StreamHandler()
