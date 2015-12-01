@@ -73,8 +73,8 @@ item-count tuples provided we will run over the list using a for loop.
 
         # pos is our "position" in the list of items. We'll begin with
         # our position at the end of the list (remember, ``len()``
-        # return a COUNT of objects in a list. We subtract 1 from this
-        # because we use self.pos to index each position in the
+        # returns a COUNT of objects in a list. We subtract 1 from
+        # this because we use self.pos to index each position in the
         # bag.
         #
         # Don't forget, list indices begin at 0 so the last item is
