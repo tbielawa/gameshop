@@ -34,7 +34,7 @@ order). 3 of those items are "cat hats" and 6 of those items are "dog
 farts".
 
 You can extend this pattern as far as you like by continuing to add
-item-cout tuples as demonstrated above.
+item-count tuples as demonstrated above.
 
 
 In the ShuffleBag constructor, the "*args" parameter means (in Python
