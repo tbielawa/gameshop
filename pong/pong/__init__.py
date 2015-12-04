@@ -14,6 +14,19 @@ WALL_BOTTOM = 2
 WALL_LEFT = 3
 
 ######################################################################
+# Gotta have them paddles, amirite?
+PADDLE_LEFT = -1
+PADDLE_RIGHT = 1
+# The end-caps
+PADDLE_SHARP_UP = -1
+PADDLE_SHARP_DOWN = -1
+# Not the end-caps, not the middle
+PADDLE_NORMAL = 1
+# Middle
+PADDLE_FLAT_MIRROR = 0
+
+
+######################################################################
 black = (000, 000, 000)
 white = (255, 255, 255)
 red = (255, 0, 0)
@@ -21,7 +34,6 @@ orange = (255, 128, 0)
 yellow = (255, 255, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
-######################################################################
 
 
 def score_digitize(score):
@@ -339,3 +351,45 @@ class Wall(pygame.sprite.Sprite):
 
     def update(self):
         pass
+
+
+class PaddlePiece(pygame.sprite.Sprite):
+    def __init__(self, piece):
+        """`piece` is one of the
+``PADDLE_(SHARP_UP|SHARP_DOWN|NORMAL|FLAT_MIRROR)`` constants defined
+in the ``pong`` module"""
+        pygame.sprite.Sprite.__init__(self)
+        self.piece = piece
+        self.image = pygame.Surface((16, 64))
+        self.rect = self.image.get_rect()
+
+
+
+######################################################################
+# Let's create the paddles now. They're composite pieces, so to
+# speak. Each paddle is composed of several different pieces
+
+
+# Left paddle
+p_l_sharp_up = PaddlePiece(PADDLE_SHARP_UP)
+p_l_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN)
+p_l_normal_top = PaddlePiece(PADDLE_NORMAL)
+p_l_normal_bot = PaddlePiece(PADDLE_NORMAL)
+p_l_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR)
+paddle_group_left = pygame.sprite.Group(p_l_sharp_up,
+                                        p_l_sharp_down,
+                                        p_l_normal_top,
+                                        p_l_normal_bot,
+                                        p_l_flat_mirror)
+
+# Right paddle
+p_r_sharp_up = PaddlePiece(PADDLE_SHARP_UP)
+p_r_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN)
+p_r_normal_top = PaddlePiece(PADDLE_NORMAL)
+p_r_normal_bot = PaddlePiece(PADDLE_NORMAL)
+p_r_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR)
+paddle_group_left = pygame.sprite.Group(p_r_sharp_up,
+                                        p_r_sharp_down,
+                                        p_r_normal_top,
+                                        p_r_normal_bot,
+                                        p_r_flat_mirror)
