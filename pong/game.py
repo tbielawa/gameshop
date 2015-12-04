@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import pong
+import pong.scene
 import logging
 import random
 # import sys
@@ -102,6 +103,10 @@ left_score = pong.PongScoreLeft()
 right_score = pong.PongScoreRight()
 
 ######################################################################
+
+splash_scene = pong.scene.AnnoyingSplashScreenScene({'clock': clock}, active=True)
+
+######################################################################
 # The pong ball initializer
 def new_ball():
     angle = float(random.randrange(0, 359))
@@ -113,16 +118,36 @@ def new_ball():
     return pong.PongBall(paddles, velocity=15, angle=angle, h_walls=h_walls, v_walls=v_walls, court_skirt=court_skirt)
 
 ball = new_ball()
+
+while splash_scene.active and show_splash:
+    for event in pygame.event.get():
+        # Enable the 'close window' button
+        if event.type == pygame.QUIT:
+            sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            kb_input = pygame.key.get_pressed()
+
+            if kb_input[pygame.K_ESCAPE] == 1:
+                sys.exit()
+
+            # Break out of the splash as soon as someone presses a key
+            show_splash = False
+            splash_screen.active = False
+            break
+        else:
+            splash_scene.run()
+
 ######################################################################
 while 1:
+
     # Basic handlers and static assets
     clock.tick(45)
     # How long since we started the game (in seconds)
-    if show_splash:
-        dt = time.time() - game_start_time
-    else:
-        # Fake setting the time so we can skip the splash
-        dt = 10
+    # if show_splash:
+    #     dt = time.time() - game_start_time
+    # else:
+    #     # Fake setting the time so we can skip the splash
+    #     dt = 10
 
     for event in pygame.event.get():
         # Enable the 'close window' button
@@ -145,13 +170,13 @@ while 1:
     ######################################################################
 
     # Create a surface (score) to blit onto the screen
-    if dt <= 4:
-        splash_screen.update()
-        pygame.display.flip()
-        # Press any key to skip the intro
-        if 1 in kb_input:
-            show_splash = False
-        continue
+    # if dt <= 4:
+    #     splash_screen.update()
+    #     pygame.display.flip()
+    #     # Press any key to skip the intro
+    #     if 1 in kb_input:
+    #         show_splash = False
+    #     continue
 
     left_score.update()
     right_score.update()
