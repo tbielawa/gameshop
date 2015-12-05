@@ -55,11 +55,77 @@ def score_digitize(score):
         return str(score)
 
 ######################################################################
+class PaddlePiece(pygame.sprite.Sprite):
+    def __init__(self, piece, side, below=None):
+        """Paddle pieces determine how the pong ball is reflected
+* `piece` One of ``PADDLE_(SHARP_UP|SHARP_DOWN|NORMAL|FLAT_MIRROR)``
+   defined in the ``pong`` module
+* `side` is PADDLE_LEFT or PADDLE_RIGHT
+* `below` is the paddle piece this is geometrically under. A value of
+  `None` for this parameter indicates that this piece is at the top of
+  the stack
+        """
+        pygame.sprite.Sprite.__init__(self)
+        self.piece = piece
+        self.image = pygame.Surface((16, 32))
+        self.image.fill(red)
+        self.side = side
+        self.surface = pygame.display.get_surface()
+        self.below = below
+
+        # XXX: REMOVE THIS once we're done debugging. The paddle
+        # pieces must be positioned underneath the drawn paddle piece
+        if self.side == PADDLE_LEFT:
+            self.x = 78 + 64
+        else:
+            self.x = 1202 - 64
+
+        self.rect = self.image.get_rect(x=self.x, y=360)
+
+    def update(self, surface, dy):
+        self.rect.move_ip(0, dy)
+        surface.blit(self.image, self.rect)
+
+
+
+
+######################################################################
+# Let's create the paddles now. They're composite pieces,
+# so-to-speak. Each paddle is composed of several different parts.
+
+
+# Left paddle
+p_l_sharp_up = PaddlePiece(PADDLE_SHARP_UP, PADDLE_LEFT, below=None)
+p_l_normal_top = PaddlePiece(PADDLE_NORMAL, PADDLE_LEFT, below=p_l_sharp_up)
+p_l_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR, PADDLE_LEFT, below=p_l_normal_top)
+p_l_normal_bot = PaddlePiece(PADDLE_NORMAL, PADDLE_LEFT, below=p_l_flat_mirror)
+p_l_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN, PADDLE_LEFT, below=p_l_normal_bot)
+paddle_group_left = pygame.sprite.Group(p_l_sharp_up,
+                                        p_l_sharp_down,
+                                        p_l_normal_top,
+                                        p_l_normal_bot,
+                                        p_l_flat_mirror)
+
+# Right paddle
+p_r_sharp_up = PaddlePiece(PADDLE_SHARP_UP, PADDLE_RIGHT, below=None)
+p_r_normal_top = PaddlePiece(PADDLE_NORMAL, PADDLE_RIGHT, below=p_r_sharp_up)
+p_r_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR, PADDLE_RIGHT, below=p_r_normal_top)
+p_r_normal_bot = PaddlePiece(PADDLE_NORMAL, PADDLE_RIGHT, below=p_r_flat_mirror)
+p_r_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN, PADDLE_RIGHT, below=p_r_normal_bot)
+paddle_group_right = pygame.sprite.Group(p_r_sharp_up,
+                                        p_r_sharp_down,
+                                        p_r_normal_top,
+                                        p_r_normal_bot,
+                                        p_r_flat_mirror)
+
+######################################################################
 class PongPaddle(pygame.sprite.Sprite):
     velocity = 15
     pos = (0, 0)
+    side = None
     up = None
     down = None
+    piece_group = None
 
     def __init__(self, h_walls=None):
         """Initialize a pong paddle. Don't forget the walls
@@ -78,13 +144,9 @@ class PongPaddle(pygame.sprite.Sprite):
 
     def hit_border(self, dy):
         """Calculate using our dy (change in up/down) if we hit a
-ceiling/floor.
-
-If we are *already* in collission with something, allow movement away
-from the object. Do not allow movement further into the object.
-
-Return data:
-
+ceiling/floor. If we are *already* in collission with something, allow
+movement away from the object. Do not allow movement further into the
+object. Return data:
 * ``True`` if we need to shut this shit down (we hit something)
 * ``False`` if we may continue moving
         """
@@ -118,7 +180,12 @@ Return data:
         if not self.hit_border(dy):
             self.rect.move_ip(0, dy)
         else:
-            pass
+            dy = 0
+
+        # Update our invisible piece positions. These determine how
+        # the ball is reflected based on impact point.
+        self.piece_group.update(self.surface, dy)
+
         self.surface.blit(self.image, self.rect)
 
 
@@ -126,13 +193,16 @@ class PongPaddleLeft(PongPaddle):
     pos = (78, 360)
     up = pygame.K_w
     down = pygame.K_s
+    side = PADDLE_LEFT
+    piece_group = paddle_group_left
 
 
 class PongPaddleRight(PongPaddle):
     pos = (1202, 360)
     up = pygame.K_UP
     down = pygame.K_DOWN
-
+    side = PADDLE_RIGHT
+    piece_group = paddle_group_right
 
 ######################################################################
 class PongBall(pygame.sprite.Sprite):
@@ -338,7 +408,6 @@ class DebugPanel(pygame.sprite.Sprite):
 the debug string yourself. New lines are not acceptable!
 
 * ``debug_str`` - The string to print in the debug panel
-
         """
         if self.show_debug:
             self.image = self.debug_font.render(debug_str, True, red)
@@ -361,45 +430,3 @@ class Wall(pygame.sprite.Sprite):
 
     def update(self):
         pass
-
-
-class PaddlePiece(pygame.sprite.Sprite):
-    def __init__(self, piece):
-        """`piece` is one of the
-``PADDLE_(SHARP_UP|SHARP_DOWN|NORMAL|FLAT_MIRROR)`` constants defined
-in the ``pong`` module"""
-        pygame.sprite.Sprite.__init__(self)
-        self.piece = piece
-        self.image = pygame.Surface((16, 64))
-        self.rect = self.image.get_rect()
-
-
-
-######################################################################
-# Let's create the paddles now. They're composite pieces, so to
-# speak. Each paddle is composed of several different pieces
-
-
-# Left paddle
-p_l_sharp_up = PaddlePiece(PADDLE_SHARP_UP)
-p_l_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN)
-p_l_normal_top = PaddlePiece(PADDLE_NORMAL)
-p_l_normal_bot = PaddlePiece(PADDLE_NORMAL)
-p_l_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR)
-paddle_group_left = pygame.sprite.Group(p_l_sharp_up,
-                                        p_l_sharp_down,
-                                        p_l_normal_top,
-                                        p_l_normal_bot,
-                                        p_l_flat_mirror)
-
-# Right paddle
-p_r_sharp_up = PaddlePiece(PADDLE_SHARP_UP)
-p_r_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN)
-p_r_normal_top = PaddlePiece(PADDLE_NORMAL)
-p_r_normal_bot = PaddlePiece(PADDLE_NORMAL)
-p_r_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR)
-paddle_group_left = pygame.sprite.Group(p_r_sharp_up,
-                                        p_r_sharp_down,
-                                        p_r_normal_top,
-                                        p_r_normal_bot,
-                                        p_r_flat_mirror)
