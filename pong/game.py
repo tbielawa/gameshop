@@ -108,24 +108,21 @@ splash_scene = pong.scene.AnnoyingSplashScreenScene({'clock': clock}, active=Tru
 
 ######################################################################
 # The pong ball initializer
-def new_ball():
-    angle = float(random.randrange(0, 359))
+def new_ball(serve_to=None):
+    if serve_to is None:
+        # This is a new game, there is nobody specifically to serve to
+        angle = random.choice(pong.serve_all)
 
-    # Possible serving angles for each quadrant
-    q1 = list(xrange(35, 56))
-    q2 = list(xrange(125, 146))
-    q3 = list(xrange(215, 236))
-    q4 = list(xrange(305, 326))
-    # All possible angles for all quadrants
-    q_all = q1 + q2 + q3 + q4
-    angle = random.choice(q_all)
+    # This is a running game, select the side to serve to:
+    elif serve_to == pong.PADDLE_LEFT:
+        angle = random.choice(pong.serve_left)
+    elif serve_to == pong.PADDLE_RIGHT:
+        angle = random.choice(pong.serve_right)
+    else:
+        raise TypeError("Invalid argument type to new_ball. 'serve_to' must be pong.PADDLE_LEFT, pong.PADDLE_RIGHT, or None")
 
-    # 33 = always through the skirt under the right paddle
-    #angle = 33
-    # 53 = 7x bounce sequence
-    #angle = 53
     logging.getLogger('pong').info("New ball angle: %s" % angle)
-    return pong.PongBall(paddles, velocity=15, angle=angle, h_walls=h_walls, v_walls=v_walls, court_skirt=court_skirt)
+    return pong.PongBall(paddles, velocity=13, angle=angle, h_walls=h_walls, v_walls=v_walls, court_skirt=court_skirt)
 
 ball = new_ball()
 
@@ -189,11 +186,11 @@ while 1:
         log.info("hit right wall")
         # Hitting the right wall is a point for the left player
         left_score.scored()
-        ball = new_ball()
+        ball = new_ball(serve_to=pong.PADDLE_RIGHT)
     elif ball_play == pong.WALL_LEFT:
         log.info("hit left wall")
         # And the left wall is a point for the right player
         right_score.scored()
-        ball = new_ball()
+        ball = new_ball(serve_to=pong.PADDLE_LEFT)
 
     pygame.display.flip()

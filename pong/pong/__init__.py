@@ -8,6 +8,7 @@ import pygame.sprite
 BUNDLED_FONT = "assets/ArcadeClassic.ttf"
 pygame.font.init()
 
+######################################################################
 WALL_TOP = 0
 WALL_RIGHT = 1
 WALL_BOTTOM = 2
@@ -25,7 +26,6 @@ PADDLE_NORMAL = 1
 # Middle
 PADDLE_FLAT_MIRROR = 0
 
-
 ######################################################################
 black = (000, 000, 000)
 white = (255, 255, 255)
@@ -35,14 +35,24 @@ yellow = (255, 255, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
 
+######################################################################
+# Possible serving angles for each quadrant
+q1 = list(xrange(35, 56))
+q2 = list(xrange(125, 146))
+q3 = list(xrange(215, 236))
+q4 = list(xrange(305, 326))
+# All possible angles for all quadrants
+serve_left = q2 + q3
+serve_right = q1 + q4
+serve_all = q1 + q2 + q3 + q4
 
+######################################################################
 def score_digitize(score):
     # Returns a left-padded string if the score is only a single digit
     if len(str(score)) == 1:
         return " {}".format(str(score))
     else:
         return str(score)
-
 
 ######################################################################
 class PongPaddle(pygame.sprite.Sprite):
