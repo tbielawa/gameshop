@@ -56,31 +56,38 @@ def score_digitize(score):
 
 ######################################################################
 class PaddlePiece(pygame.sprite.Sprite):
-    def __init__(self, piece, side, below=None):
+    width = 16
+
+    def __init__(self, piece, side, below=None, color=white):
         """Paddle pieces determine how the pong ball is reflected
 * `piece` One of ``PADDLE_(SHARP_UP|SHARP_DOWN|NORMAL|FLAT_MIRROR)``
    defined in the ``pong`` module
 * `side` is PADDLE_LEFT or PADDLE_RIGHT
-* `below` is the paddle piece this is geometrically under. A value of
-  `None` for this parameter indicates that this piece is at the top of
-  the stack
+* `below` - Offset from the top paddle piece
         """
         pygame.sprite.Sprite.__init__(self)
         self.piece = piece
-        self.image = pygame.Surface((16, 32))
-        self.image.fill(red)
+        self.color = color
+        if self.piece == PADDLE_SHARP_UP or self.piece == PADDLE_SHARP_DOWN:
+            self.height = 8
+        else:
+            self.height = 16
+
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.color)
         self.side = side
         self.surface = pygame.display.get_surface()
         self.below = below
 
-        # XXX: REMOVE THIS once we're done debugging. The paddle
-        # pieces must be positioned underneath the drawn paddle piece
+        # This aligns our center with the center of the paddle
         if self.side == PADDLE_LEFT:
-            self.x = 78 + 64
+            self.x = 70
         else:
-            self.x = 1202 - 64
+            self.x = 1194
 
-        self.rect = self.image.get_rect(x=self.x, y=360)
+        self.rect = self.image.get_rect(x=self.x, y=328)
+        if self.below is not None:
+            self.rect.move_ip(0, below)
 
     def update(self, surface, dy):
         self.rect.move_ip(0, dy)
@@ -95,28 +102,28 @@ class PaddlePiece(pygame.sprite.Sprite):
 
 
 # Left paddle
-p_l_sharp_up = PaddlePiece(PADDLE_SHARP_UP, PADDLE_LEFT, below=None)
-p_l_normal_top = PaddlePiece(PADDLE_NORMAL, PADDLE_LEFT, below=p_l_sharp_up)
-p_l_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR, PADDLE_LEFT, below=p_l_normal_top)
-p_l_normal_bot = PaddlePiece(PADDLE_NORMAL, PADDLE_LEFT, below=p_l_flat_mirror)
-p_l_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN, PADDLE_LEFT, below=p_l_normal_bot)
+p_l_sharp_up = PaddlePiece(PADDLE_SHARP_UP, PADDLE_LEFT, below=None, color=red)
+p_l_normal_top = PaddlePiece(PADDLE_NORMAL, PADDLE_LEFT, below=8, color=orange)
+p_l_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR, PADDLE_LEFT, below=8+16, color=yellow)
+p_l_normal_bot = PaddlePiece(PADDLE_NORMAL, PADDLE_LEFT, below=8+16*2, color=green)
+p_l_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN, PADDLE_LEFT, below=8+16*3, color=blue)
 paddle_group_left = pygame.sprite.Group(p_l_sharp_up,
-                                        p_l_sharp_down,
                                         p_l_normal_top,
+                                        p_l_flat_mirror,
                                         p_l_normal_bot,
-                                        p_l_flat_mirror)
+                                        p_l_sharp_down)
 
 # Right paddle
-p_r_sharp_up = PaddlePiece(PADDLE_SHARP_UP, PADDLE_RIGHT, below=None)
-p_r_normal_top = PaddlePiece(PADDLE_NORMAL, PADDLE_RIGHT, below=p_r_sharp_up)
-p_r_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR, PADDLE_RIGHT, below=p_r_normal_top)
-p_r_normal_bot = PaddlePiece(PADDLE_NORMAL, PADDLE_RIGHT, below=p_r_flat_mirror)
-p_r_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN, PADDLE_RIGHT, below=p_r_normal_bot)
+p_r_sharp_up = PaddlePiece(PADDLE_SHARP_UP, PADDLE_RIGHT, below=None, color=red)
+p_r_normal_top = PaddlePiece(PADDLE_NORMAL, PADDLE_RIGHT, below=8, color=orange)
+p_r_flat_mirror = PaddlePiece(PADDLE_FLAT_MIRROR, PADDLE_RIGHT, below=8+16, color=yellow)
+p_r_normal_bot = PaddlePiece(PADDLE_NORMAL, PADDLE_RIGHT, below=8+16*2, color=green)
+p_r_sharp_down = PaddlePiece(PADDLE_SHARP_DOWN, PADDLE_RIGHT, below=8+16*3, color=blue)
 paddle_group_right = pygame.sprite.Group(p_r_sharp_up,
-                                        p_r_sharp_down,
-                                        p_r_normal_top,
-                                        p_r_normal_bot,
-                                        p_r_flat_mirror)
+                                         p_r_normal_top,
+                                         p_r_flat_mirror,
+                                         p_r_normal_bot,
+                                         p_r_sharp_down)
 
 ######################################################################
 class PongPaddle(pygame.sprite.Sprite):
