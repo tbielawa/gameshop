@@ -110,6 +110,16 @@ splash_scene = pong.scene.AnnoyingSplashScreenScene({'clock': clock}, active=Tru
 # The pong ball initializer
 def new_ball():
     angle = float(random.randrange(0, 359))
+
+    # Possible serving angles for each quadrant
+    q1 = list(xrange(35, 56))
+    q2 = list(xrange(125, 146))
+    q3 = list(xrange(215, 236))
+    q4 = list(xrange(305, 326))
+    # All possible angles for all quadrants
+    q_all = q1 + q2 + q3 + q4
+    angle = random.choice(q_all)
+
     # 33 = always through the skirt under the right paddle
     #angle = 33
     # 53 = 7x bounce sequence
@@ -142,12 +152,6 @@ while 1:
 
     # Basic handlers and static assets
     clock.tick(45)
-    # How long since we started the game (in seconds)
-    # if show_splash:
-    #     dt = time.time() - game_start_time
-    # else:
-    #     # Fake setting the time so we can skip the splash
-    #     dt = 10
 
     for event in pygame.event.get():
         # Enable the 'close window' button
@@ -168,16 +172,6 @@ while 1:
         pygame.draw.rect(screen, (000, 175, 000), court_visual, 2)
 
     ######################################################################
-
-    # Create a surface (score) to blit onto the screen
-    # if dt <= 4:
-    #     splash_screen.update()
-    #     pygame.display.flip()
-    #     # Press any key to skip the intro
-    #     if 1 in kb_input:
-    #         show_splash = False
-    #     continue
-
     left_score.update()
     right_score.update()
     paddles.update()
@@ -189,7 +183,6 @@ while 1:
     ######################################################################
 
     ball_play = ball.update()
-    # 1 and 3 are the indicie of the right and left walls
     if not ball_play:
         pass
     elif ball_play == pong.WALL_RIGHT:
