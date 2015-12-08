@@ -20,7 +20,7 @@ PADDLE_LEFT = -1
 PADDLE_RIGHT = 1
 # The end-caps
 PADDLE_SHARP_UP = -1
-PADDLE_SHARP_DOWN = -1
+PADDLE_SHARP_DOWN = -2
 # Not the end-caps, not the middle
 PADDLE_NORMAL = 1
 # Middle
@@ -281,9 +281,56 @@ collisions. Returns:
         # anything and how we need to adjust our path of movement
 
         if paddle:
-            # TODO: Refactor to handle the ball impacting different
-            # positions on a paddle
+            piece_group = paddle.piece_group
+            impact_points = pygame.sprite.spritecollide(self, piece_group, False)
+            impact_pieces = [p.piece for p in impact_points]
+            self.log.debug("Impact points: %s" % impact_points)
+            self.log.debug("Impact pieces: %s" % impact_pieces)
+
+            # If the point of impact covers multiple pieces we use the
+            # sharpest angle of reflection allowed
+            sharpest_reflection = None
+
+            if PADDLE_SHARP_UP in impact_pieces:
+                sharpest_reflection = PADDLE_SHARP_UP
+            elif PADDLE_SHARP_DOWN in impact_pieces:
+                sharpest_reflection = PADDLE_SHARP_UP
+            elif PADDLE_NORMAL in impact_pieces:
+                sharpest_reflection = PADDLE_NORMAL
+            elif PADDLE_FLAT_MIRROR in impact_pieces:
+                sharpest_reflection = PADDLE_FLAT_MIRROR
+            else:
+                self.log.info("We hit some kind of unidentified impact point: %s" % impact_pieces)
+
+            self.log.debug("Sharpest reflection: %s" % sharpest_reflection)
+
+
+            # Endcap
+            if sharpest_reflection == PADDLE_SHARP_UP:
+                if paddle.side == PADDLE_RIGHT:
+                    self.angle = 300
+                else:
+                    self.angle = 240
+            # Endcap
+            elif sharpest_reflection == PADDLE_SHARP_DOWN:
+                if paddle.side == PADDLE_RIGHT:
+                    self.angle = 60
+                else:
+                    self.angle = 120
+            # Not end, not middle
+            elif sharpest_reflection == PADDLE_NORMAL:
+                pass
+            # Middle
+            elif sharpest_reflection == PADDLE_FLAT_MIRROR:
+                # Heading to the right
+                if next_x > 0:
+                    self.angle = 0
+                else:
+                    self.angle = 180
+
+
             next_x = -1 * (self.velocity * math.cos(math.radians(self.angle)))
+            next_y = -1 * (self.velocity * math.sin(math.radians(self.angle)))
         elif boundary is not None:
             # Left or right wall = A PLAYER HAS SCORED
             if boundary in [WALL_LEFT, WALL_RIGHT]:

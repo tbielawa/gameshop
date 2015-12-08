@@ -121,6 +121,7 @@ def new_ball(serve_to=None):
     else:
         raise TypeError("Invalid argument type to new_ball. 'serve_to' must be pong.PADDLE_LEFT, pong.PADDLE_RIGHT, or None")
 
+    # angle = 180
     logging.getLogger('pong').info("New ball angle: %s" % angle)
     return pong.PongBall(paddles, velocity=13, angle=angle, h_walls=h_walls, v_walls=v_walls, court_skirt=court_skirt)
 
